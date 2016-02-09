@@ -1,0 +1,161 @@
+from __future__ import unicode_literals
+import datetime
+import json
+import re
+
+from pprint import pprint
+
+import utils
+from log import logger
+
+
+afreeca_init_db_json = 'data/afreeca_database.json'
+if utils.is_cli:
+    afreeca_init_db_json = '../' + afreeca_init_db_json
+
+"""
+Game specific info
+
+StarCraft: race
+"""
+
+"""
+Stream data type
+
+A dictionary with the following keys:
+
+type            afreeca, twitch, etc.
+id              stream id
+nickname        nickname
+last_seen       set to time of script update, null if never seen
+online_since    null if never else given from stream info, null if offline
+max_viewers     highest seen count
+viewers         current count, 0 if offline
+"""
+
+"""
+Database data type
+
+A dictionary of streams with key <type>_<id>
+"""
+
+
+def format_afreeca_response_to_json(data):
+    if data.startswith(b'var oBroadListData = ') and data.endswith(b';'):
+        data = data[len(b'var oBroadListData = '):-1]
+    data = re.sub(b'\'', b'"', data)
+    data = re.sub(r'[^\x00-\x7F]+', '', data)
+    pattern = '{[^}]*?' \
+              '("user_id"[^,]+),[^}]*?' \
+              '("broad_start"[^,]+),.*?' \
+              '("total_view_cnt"[^,]+),[^}]*?' \
+              '}'
+    repl = '\n{ \\1, \\2, \\3 }'
+    data = re.sub(pattern, repl, data, flags=re.DOTALL)
+    return data
+
+
+def get_current_streams():
+    """Returns a list of streams (with only relevant keys)"""
+    streams = list()
+    afreeca_url = 'http://live.afreeca.com:8057/afreeca/broad_list_api.php'
+    # afreeca_url = 'http://localhost:8000/broad_list_api.php'
+    afreeca_response = utils.fetch_url(afreeca_url)
+    afreeca_json_str = format_afreeca_response_to_json(afreeca_response)
+    json_object = json.loads(afreeca_json_str)
+    kst_utc_offset = 9
+    for info in json_object['CHANNEL']['REAL_BROAD']:
+        id = info['user_id']
+        viewers = int(info['total_view_cnt'])
+        online_since = utils.get_utc_time(info['broad_start'], kst_utc_offset)
+        stream = { 'type': 'afreeca', 'id': id, 'viewers' : viewers, 'online_since': online_since }
+        streams.append(stream)
+    return streams
+
+
+def database_key(stream_type, stream_id):
+    return stream_type + '_' + stream_id
+
+
+def update_database(db, streams):
+    time = datetime.datetime.utcnow()
+
+    for key in db:
+        db_stream = db[key]
+        db_stream['online_since'] = None
+        db_stream['viewers'] = 0
+
+    for stream in streams:
+        key = database_key(stream['type'], stream['id'])
+        if key not in db:
+            continue
+        db_stream = db[key]
+        online_since, viewers = stream['online_since'], stream['viewers']
+        db_stream['last_seen'] = time
+        db_stream['online_since'] = online_since
+        db_stream['viewers'] = viewers
+        stream_type, id, nickname = db_stream['type'], db_stream['id'], db_stream['nickname']
+        logger.info('{} ({}:{}:{})'.format(nickname, stream_type, id, viewers))
+        if viewers > db_stream['max_viewers']:
+            db_stream['max_viewers'] = viewers
+
+    return db
+
+
+def get_initial_database(json_file):
+    db = dict()
+    json_str = utils.read_file(json_file)
+    afreeca_json = json.loads(json_str)
+    for user_id, (nickname, race) in afreeca_json.items():
+        stream = {
+            'type': 'afreeca',
+            'id': user_id,
+            'nickname': nickname,
+            'last_seen': None,
+            'online_since': None,
+            'max_viewers': 0,
+            'viewers': 0,
+            'game': 'brood war',
+            'game_info': {'race': race},
+        }
+        key = database_key(stream['type'], stream['id'])
+        db[key] = stream
+    return db
+
+
+def test_get_database(json_file):
+    with open(json_file, 'r') as f:
+        json_str = f.read()
+        db = utils.json_to_database(json_str)
+        return db
+
+
+@utils.cli_only
+def test_set_database(db, out_name):
+    json_str = utils.database_to_json(db)
+    with open(out_name, 'w') as f:
+        f.write(json_str)
+
+
+def main():
+    try:
+        db_init = get_initial_database(afreeca_init_db_json)
+        with open('db_init.txt', 'w') as f:
+            pprint(db_init, f)
+        test_set_database(db_init, 'db_init.json')
+
+        db_get = test_get_database('db_init.json')
+        with open('db_get.txt', 'w') as f:
+            pprint(db_get, f)
+        test_set_database(db_get, 'db_get.json')
+
+        db_updated = update_database(db_get, get_current_streams(), datetime.datetime.utcnow())
+        with open('db_updated.txt', 'w') as f:
+            pprint(db_updated, f)
+        test_set_database(db_updated, 'db_updated.json')
+    except:
+        logger.exception("Exception at main handler")
+
+
+if __name__ == '__main__':
+    main()
