@@ -1,7 +1,5 @@
 import datetime
 import json
-import os
-import re
 
 import webapp2
 from google.appengine.ext import ndb
@@ -26,41 +24,23 @@ class Time(ndb.Model):
     value = ndb.DateTimeProperty()
 
 
-def ndb_set_database(db, create_only=False):
-    key = ndb.Key(JsonDatabase, datastore_key_database)
+def ndb_set_value(kind, id, value, create_only=False):
+    key = ndb.Key(kind, id)
     ndb_entity = key.get()
     if ndb_entity is not None:
         if create_only:
-            raise RuntimeError('Cannot create {}: already exists.'.format(datastore_key_database))
-        ndb_entity.value = db
+            raise RuntimeError('{} key \'{}\' already exists.'.format(kind.__name__, id))
+        ndb_entity.value = value
     else:
-        ndb_entity = JsonDatabase(key=key, value=db)
+        ndb_entity = kind(key=key, value=value)
     ndb_entity.put()
 
 
-def ndb_get_database():
-    key = ndb.Key(JsonDatabase, datastore_key_database)
+def ndb_get_value(kind, id):
+    key = ndb.Key(kind, id)
     ndb_entity = key.get()
     if not ndb_entity:
-        raise RuntimeError('Key {} does not exist'.format(datastore_key_database))
-    return ndb_entity.value
-
-
-def ndb_set_last_update(time):
-    key = ndb.Key(Time, datastore_key_last_update)
-    ndb_entity = key.get()
-    if ndb_entity is None:
-        ndb_entity = Time(key=key, value=time)
-    else:
-        ndb_entity.value = time
-    ndb_entity.put()
-
-
-def ndb_get_last_update():
-    key = ndb.Key(Time, datastore_key_last_update)
-    ndb_entity = key.get()
-    if not ndb_entity:
-        raise RuntimeError('Key {} does not exist'.format(datastore_key_last_update))
+        raise RuntimeError('{} key \'{}\' does not exist.'.format(kind.__name__, id))
     return ndb_entity.value
 
 
@@ -70,26 +50,26 @@ class InitialiseDatabaseHandler(webapp2.RequestHandler):
         afreeca_json = streams.afreeca_init_db_json
         init_db = streams.get_initial_database(afreeca_json)
         init_db_json = utils.database_to_json(init_db)
-        ndb_set_database(init_db_json, True)
-        ndb_set_last_update(datetime.datetime.utcnow())
+        ndb_set_value(JsonDatabase, datastore_key_database, init_db_json, True)
+        ndb_set_value(Time, datastore_key_last_update, datetime.datetime.utcnow())
         logger.info('Initialisation complete')
 
 
 class UpdateDatabaseHandler(webapp2.RequestHandler):
     def update_database(self):
-        db_json = ndb_get_database()
+        db_json = ndb_get_value(JsonDatabase, datastore_key_database)
         db = utils.json_to_database(db_json)
         current_streams = streams.get_current_streams()
 
         updated_db = streams.update_database(db, current_streams)
         updated_db_json = utils.database_to_json(updated_db)
 
-        ndb_set_database(updated_db_json)
+        ndb_set_value(JsonDatabase, datastore_key_database, updated_db_json)
         memcache.delete(memcache_key_database)
         memcache.set(memcache_key_database, updated_db)
 
     def modify_last_update_time(self, utc_now):
-        ndb_set_last_update(utc_now)
+        ndb_set_value(Time, datastore_key_last_update, utc_now)
         memcache.delete(memcache_key_last_update)
         memcache.set(memcache_key_last_update, utc_now)
 
@@ -110,13 +90,13 @@ class StreamsJsonHandler(webapp2.RequestHandler):
         # Get database
         db = memcache.get(memcache_key_database)
         if db is None:
-            db = ndb_get_database()
+            db = ndb_get_value(JsonDatabase, datastore_key_database)
             memcache.set(memcache_key_database, db)
 
         # Get last update time
         last_update_time = memcache.get(memcache_key_last_update)
         if last_update_time is None:
-            last_update_time = ndb_get_last_update()
+            last_update_time = ndb_get_value(Time, datastore_key_last_update)
             memcache.set(memcache_key_last_update, last_update_time)
 
         json_obj = {'streams': db, 'last_update': last_update_time }
@@ -130,13 +110,13 @@ class DefaultHandler(webapp2.RequestHandler):
         # Get database
         db = memcache.get(memcache_key_database)
         if db is None:
-            db = ndb_get_database()
+            db = ndb_get_value(JsonDatabase, datastore_key_database)
             memcache.set(memcache_key_database, db)
 
         # Get last update time
         last_update_time = memcache.get(memcache_key_last_update)
         if last_update_time is None:
-            last_update_time = ndb_get_last_update()
+            last_update_time = ndb_get_value(Time, datastore_key_last_update)
             memcache.set(memcache_key_last_update, last_update_time)
 
         # Increment hit counter
