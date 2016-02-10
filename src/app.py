@@ -90,7 +90,8 @@ class StreamsJsonHandler(webapp2.RequestHandler):
         # Get database
         db = memcache.get(memcache_key_database)
         if db is None:
-            db = ndb_get_value(JsonDatabase, datastore_key_database)
+            db_json = ndb_get_value(JsonDatabase, datastore_key_database)
+            db = utils.json_to_database(db_json)
             memcache.set(memcache_key_database, db)
 
         # Get last update time
