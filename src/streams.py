@@ -63,12 +63,13 @@ def get_current_streams():
     afreeca_response = utils.fetch_url(afreeca_url)
     afreeca_json_str = format_afreeca_response_to_json(afreeca_response)
     json_object = json.loads(afreeca_json_str)
-    kst_utc_offset = 9
+    time_format = '%Y-%m-%d %H:%M'
+    time_offset = 9
     for info in json_object['CHANNEL']['REAL_BROAD']:
         id = info['user_id']
         viewers = int(info['total_view_cnt'])
-        online_since = utils.get_utc_time(info['broad_start'], kst_utc_offset)
-        stream = { 'type': 'afreeca', 'id': id, 'viewers' : viewers, 'online_since': online_since }
+        online_since = utils.get_utc_time(info['broad_start'], time_format, time_offset)
+        stream = {'type': 'afreeca', 'id': id, 'viewers': viewers, 'online_since': online_since}
         streams.append(stream)
     return streams
 
@@ -126,13 +127,13 @@ def get_initial_database(json_file):
 def test_get_database(json_file):
     with open(json_file, 'r') as f:
         json_str = f.read()
-        db = utils.json_to_database(json_str)
+        db = utils.json_to_dict(json_str)
         return db
 
 
 @utils.cli_only
 def test_set_database(db, out_name):
-    json_str = utils.database_to_json(db)
+    json_str = utils.dict_to_json(db)
     with open(out_name, 'w') as f:
         f.write(json_str)
 

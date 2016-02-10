@@ -58,24 +58,34 @@ def fetch_url(url):
         return None
 
 
-def get_utc_time(time_str, offset):
-    time = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M')
+def get_utc_time(s, format, offset):
+    time = datetime.datetime.strptime(s, format)
     utc_time = time - datetime.timedelta(hours=offset)
     return utc_time
 
 
-def date_handler(obj):
+def json_date_serializer(obj):
     if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
-        return obj.isoformat()
+        return obj.strftime('%Y-%m-%dT%H:%M:%SZ')
     else:
         return None
 
 
-def database_to_json(db):
-    json_str = json.dumps(db, default=date_handler, sort_keys=True)
-    return json_str
+def json_date_deserializer(obj):
+    def str_to_datetime(s):
+        return datetime.datetime.strptime(s, '%Y-%m-%dT%H:%M:%SZ')
+
+    if isinstance(obj, dict):
+        for key in ('last_seen', 'online_since'):
+            if key in obj and obj[key] is not None:
+                obj[key] = str_to_datetime(obj[key])
+        return obj
+    raise Exception('Unexpected')
 
 
-def json_to_database(json_str):
-    database = json.loads(json_str)
-    return database
+def dict_to_json(db):
+    return json.dumps(db, default=json_date_serializer, sort_keys=True)
+
+
+def json_to_dict(json_str):
+    return json.loads(json_str, object_hook=json_date_deserializer)

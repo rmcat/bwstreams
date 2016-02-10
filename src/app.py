@@ -49,7 +49,7 @@ class InitialiseDatabaseHandler(webapp2.RequestHandler):
         logger.info('Initialising database')
         afreeca_json = streams.afreeca_init_db_json
         init_db = streams.get_initial_database(afreeca_json)
-        init_db_json = utils.database_to_json(init_db)
+        init_db_json = utils.dict_to_json(init_db)
         ndb_set_value(JsonDatabase, datastore_key_database, init_db_json, True)
         ndb_set_value(Time, datastore_key_last_update, datetime.datetime.utcnow())
         logger.info('Initialisation complete')
@@ -58,11 +58,11 @@ class InitialiseDatabaseHandler(webapp2.RequestHandler):
 class UpdateDatabaseHandler(webapp2.RequestHandler):
     def update_database(self):
         db_json = ndb_get_value(JsonDatabase, datastore_key_database)
-        db = utils.json_to_database(db_json)
+        db = utils.json_to_dict(db_json)
         current_streams = streams.get_current_streams()
 
         updated_db = streams.update_database(db, current_streams)
-        updated_db_json = utils.database_to_json(updated_db)
+        updated_db_json = utils.dict_to_json(updated_db)
 
         ndb_set_value(JsonDatabase, datastore_key_database, updated_db_json)
         memcache.delete(memcache_key_database)
@@ -72,7 +72,6 @@ class UpdateDatabaseHandler(webapp2.RequestHandler):
         ndb_set_value(Time, datastore_key_last_update, utc_now)
         memcache.delete(memcache_key_last_update)
         memcache.set(memcache_key_last_update, utc_now)
-
 
     @ndb.transactional(xg=True)
     @utils.wrap_exception
@@ -91,7 +90,7 @@ class StreamsJsonHandler(webapp2.RequestHandler):
         db = memcache.get(memcache_key_database)
         if db is None:
             db_json = ndb_get_value(JsonDatabase, datastore_key_database)
-            db = utils.json_to_database(db_json)
+            db = utils.json_to_dict(db_json)
             memcache.set(memcache_key_database, db)
 
         # Get last update time
@@ -101,8 +100,9 @@ class StreamsJsonHandler(webapp2.RequestHandler):
             memcache.set(memcache_key_last_update, last_update_time)
 
         json_obj = {'streams': db, 'last_update': last_update_time }
+        json_str = utils.dict_to_json(json_obj)
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json.dumps(json_obj, default=utils.date_handler, sort_keys=True))
+        self.response.out.write(json_str)
 
 
 class DefaultHandler(webapp2.RequestHandler):
