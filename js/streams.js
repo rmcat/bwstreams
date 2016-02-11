@@ -56,6 +56,10 @@ function createTableHeader(colHeaders) {
     return tr;
 }
 
+function capitalizeWord(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function createStreamTable() {
     loadJSON(function(response) {
         var json = JSON.parse(response);
@@ -74,7 +78,7 @@ function createStreamTable() {
                     continue;
                 }
                 var nickname = info["nickname"];
-                var race = info["game_info"]["race"];
+                var race = capitalizeWord(info["game_info"]["race"]);
                 var viewers = info["viewers"];
                 var maxViewers = info["max_viewers"];
                 var isOnline = info["online_since"] !== null;
