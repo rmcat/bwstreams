@@ -52,10 +52,9 @@ function capitalizeWord(string) {
 
 function createStreamTable() {
     loadJSON(function(response) {
+        var newTbody = document.createElement("tbody");
+
         var json = JSON.parse(response);
-        var oldTable = document.getElementById(streamTableId);
-        var newTable = oldTable.cloneNode();
-        newTable.appendChild(createTableHeader(["Streamer", "Race", "Viewers", "High", "Last Seen"]));
         var streams = json.streams;
         for (var key in streams) {
             if (key.substring(0, 8) != "afreeca_") {
@@ -67,6 +66,7 @@ function createStreamTable() {
                 if (game != "brood war") {
                     continue;
                 }
+
                 var nickname = info["nickname"];
                 var race = capitalizeWord(info["game_info"]["race"]);
                 var viewers = info["viewers"];
@@ -74,27 +74,23 @@ function createStreamTable() {
                 var isOnline = info["online_since"] !== null;
                 var lastSeen = getLastSeenStatus(isOnline, info["last_seen"]);
                 var id = info["id"];
+                var url = "http://play.afreeca.com/" + id + "/embed"
 
-                var tr = document.createElement("tr");
-                var td = document.createElement("td");
-                td.appendChild(document.createTextNode(nickname));
-                tr.appendChild(td);
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode(race));
-                tr.appendChild(td);
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode(viewers));
-                tr.appendChild(td);
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode(maxViewers));
-                tr.appendChild(td);
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode(lastSeen));
-                tr.appendChild(td);
-                newTable.appendChild(tr);
+                var newRow = newTbody.insertRow(-1);
+                var rowText = [ nickname, race, viewers, maxViewers, lastSeen ];
+                for (var i = 0; i < rowText.length; i++)
+                {
+                    var textNode = document.createTextNode(rowText[i]);
+                    var newCell = newRow.insertCell(-1);
+                    newCell.appendChild(textNode);
+                }
             }
         }
-        oldTable.parentNode.replaceChild(newTable, oldTable);
+
+        var table = document.getElementById(streamTableId);
+        var oldTbody = document.getElementById(streamTableId).getElementsByTagName("tbody")[0];
+
+        table.replaceChild(newTbody, oldTbody);
     });
 }
 

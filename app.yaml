@@ -10,6 +10,8 @@ builtins:
 handlers:
 - url: /css
   static_dir: css
+- url: /fonts
+  static_dir: js
 - url: /js
   static_dir: js
 - url: /favicon\.ico
