@@ -26,15 +26,7 @@ function getLastSeenStatus(isOnline, lastSeen) {
     } else if (lastSeen === null) {
         return "Never";
     } else {
-        //2015-12-31T23:59:59.999000
-        var year = lastSeen.slice(0, 4);
-        var month = lastSeen.slice(5, 7) - 1;
-        var day = lastSeen.slice(8, 10);
-        var hour = lastSeen.slice(11, 13);
-        var minute = lastSeen.slice(14, 16);
-        var second = lastSeen.slice(17, 19);
-        var lastSeenDate = new Date(Date.UTC(year, month, day, hour, minute, second));
-        return getTimeSince(lastSeenDate);
+        return getTimeSince(new Date(lastSeen));
     }
 }
 
