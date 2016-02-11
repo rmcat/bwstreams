@@ -46,16 +46,6 @@ function loadJSON(callback) {
     xobj.send(null);
 }
 
-function createTableHeader(colHeaders) {
-    var tr = document.createElement("tr");
-    for (var i in colHeaders) {
-        var th = document.createElement("th");
-        th.appendChild(document.createTextNode(colHeaders[i]));
-        tr.appendChild(th);
-    }
-    return tr;
-}
-
 function capitalizeWord(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -106,15 +96,6 @@ function createStreamTable() {
         }
         oldTable.parentNode.replaceChild(newTable, oldTable);
     });
-}
-
-function clearTable() {
-    var table = document.getElementById(streamTableId);
-    var rows = table.rows;
-    var i = rows.length;
-    while (--i > 0) {
-        table.deleteRow(i);
-    }
 }
 
 createStreamTable();
