@@ -20,7 +20,7 @@ function getTimeSince(date) {
         return getTimeString(minutes, "minute");
     }
     var hours = Math.floor(delta / (1000 * 60 * 60));
-    if (hours < 60) {
+    if (hours < 24) {
         return getTimeString(hours, "hour");
     }
     var days = Math.floor(delta / (1000 * 60 * 60 * 24));
