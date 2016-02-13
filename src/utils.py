@@ -4,6 +4,7 @@ import json
 import os
 import urllib2
 from StringIO import StringIO
+from google.appengine.api import urlfetch
 
 from log import logger
 
@@ -40,6 +41,7 @@ def read_file(filename):
 
 
 def fetch_url(url):
+    urlfetch.set_default_fetch_deadline(30)
     try:
         request = urllib2.Request(url)
         request.add_header('Accept-encoding', 'gzip')
