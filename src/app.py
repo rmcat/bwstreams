@@ -14,6 +14,7 @@ memcache_key_database = 'memcache_key_database'
 memcache_key_last_update = 'memcache_key_last_update'
 datastore_key_database = 'database'
 datastore_key_last_update = 'last_update'
+datastore_key_hits_streams_json = 'streams_json'
 
 
 class JsonDatabase(ndb.Model):
@@ -24,24 +25,54 @@ class Time(ndb.Model):
     value = ndb.DateTimeProperty()
 
 
+class HitCounter(ndb.Model):
+    value = ndb.IntegerProperty(default=0)
+
+
 def ndb_set_value(kind, id, value, create_only=False):
     key = ndb.Key(kind, id)
     ndb_entity = key.get()
     if ndb_entity is not None:
         if create_only:
-            raise RuntimeError('{} key \'{}\' already exists.'.format(kind.__name__, id))
+            raise KeyError('{} key \'{}\' already exists.'.format(kind.__name__, id))
         ndb_entity.value = value
     else:
         ndb_entity = kind(key=key, value=value)
     ndb_entity.put()
 
 
-def ndb_get_value(kind, id):
+def ndb_get_entity(kind, id):
     key = ndb.Key(kind, id)
     ndb_entity = key.get()
     if not ndb_entity:
-        raise RuntimeError('{} key \'{}\' does not exist.'.format(kind.__name__, id))
-    return ndb_entity.value
+        raise KeyError('{} key \'{}\' does not exist.'.format(kind.__name__, id))
+    return ndb_entity
+
+
+def update_database():
+    db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
+    db = utils.json_to_dict(db_json)
+    current_streams = streams.get_current_streams()
+
+    updated_db = streams.update_database(db, current_streams)
+    updated_db_json = utils.dict_to_json(updated_db)
+
+    ndb_set_value(JsonDatabase, datastore_key_database, updated_db_json)
+    memcache.delete(memcache_key_database)
+    memcache.set(memcache_key_database, updated_db)
+
+
+def modify_last_update_time(utc_now):
+    ndb_set_value(Time, datastore_key_last_update, utc_now)
+    memcache.delete(memcache_key_last_update)
+    memcache.set(memcache_key_last_update, utc_now)
+
+
+@ndb.transactional()
+def increment_hit_counter(key):
+    hit_count = ndb_get_entity(HitCounter, key)
+    hit_count.value += 1
+    hit_count.put()
 
 
 class InitialiseDatabaseHandler(webapp2.RequestHandler):
@@ -50,83 +81,56 @@ class InitialiseDatabaseHandler(webapp2.RequestHandler):
         afreeca_json = streams.afreeca_init_db_json
         init_db = streams.get_initial_database(afreeca_json)
         init_db_json = utils.dict_to_json(init_db)
-        ndb_set_value(JsonDatabase, datastore_key_database, init_db_json, True)
-        ndb_set_value(Time, datastore_key_last_update, datetime.datetime.utcnow())
+        try:
+            ndb_set_value(JsonDatabase, datastore_key_database, init_db_json, True)
+            ndb_set_value(Time, datastore_key_last_update, datetime.datetime.utcnow())
+        except KeyError:
+            pass
+        try:
+            ndb_set_value(HitCounter, datastore_key_hits_streams_json, 0, True)
+        except KeyError:
+            pass
         logger.info('Initialisation complete')
 
 
 class UpdateDatabaseHandler(webapp2.RequestHandler):
-    def update_database(self):
-        db_json = ndb_get_value(JsonDatabase, datastore_key_database)
-        db = utils.json_to_dict(db_json)
-        current_streams = streams.get_current_streams()
-
-        updated_db = streams.update_database(db, current_streams)
-        updated_db_json = utils.dict_to_json(updated_db)
-
-        ndb_set_value(JsonDatabase, datastore_key_database, updated_db_json)
-        memcache.delete(memcache_key_database)
-        memcache.set(memcache_key_database, updated_db)
-
-    def modify_last_update_time(self, utc_now):
-        ndb_set_value(Time, datastore_key_last_update, utc_now)
-        memcache.delete(memcache_key_last_update)
-        memcache.set(memcache_key_last_update, utc_now)
-
     @ndb.transactional(xg=True)
     @utils.wrap_exception
     def get(self):
         logger.info('Updating database')
         utc_now = datetime.datetime.utcnow()
-        self.update_database()
-        self.modify_last_update_time(utc_now)
+        update_database()
+        modify_last_update_time(utc_now)
         logger.info('Update complete')
 
 
 class StreamsJsonHandler(webapp2.RequestHandler):
     @utils.wrap_exception
     def get(self):
+        increment_hit_counter(datastore_key_hits_streams_json)
+
         # Get database
         db = memcache.get(memcache_key_database)
         if db is None:
-            db_json = ndb_get_value(JsonDatabase, datastore_key_database)
+            db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
             db = utils.json_to_dict(db_json)
             memcache.set(memcache_key_database, db)
 
         # Get last update time
         last_update_time = memcache.get(memcache_key_last_update)
         if last_update_time is None:
-            last_update_time = ndb_get_value(Time, datastore_key_last_update)
+            last_update_time = ndb_get_entity(Time, datastore_key_last_update).value
             memcache.set(memcache_key_last_update, last_update_time)
 
-        json_obj = {'streams': db, 'last_update': last_update_time }
+        json_obj = {'streams': db, 'last_update': last_update_time}
         json_str = utils.dict_to_json(json_obj)
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json_str)
-
-
-class DefaultHandler(webapp2.RequestHandler):
-    @utils.wrap_exception
-    def get(self):
-        # Get database
-        db = memcache.get(memcache_key_database)
-        if db is None:
-            db = ndb_get_value(JsonDatabase, datastore_key_database)
-            memcache.set(memcache_key_database, db)
-
-        # Get last update time
-        last_update_time = memcache.get(memcache_key_last_update)
-        if last_update_time is None:
-            last_update_time = ndb_get_value(Time, datastore_key_last_update)
-            memcache.set(memcache_key_last_update, last_update_time)
-
-        # Increment hit counter
-        # hit_counter.increment()
 
 
 app = webapp2.WSGIApplication([
     ('/admin/update_database', UpdateDatabaseHandler),
     ('/admin/initialise_database', InitialiseDatabaseHandler),
     ('/streams.json', StreamsJsonHandler),
-    ('.*', DefaultHandler),
+    ('/', StreamsJsonHandler),
 ], debug=True)
