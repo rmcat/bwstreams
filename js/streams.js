@@ -1,3 +1,5 @@
+"use strict";
+
 var streamTableId = "streams_table";
 
 function getTimeSince(date) {
@@ -34,10 +36,6 @@ function getLastSeenStatus(onlineSince, lastSeen) {
         return getTimeSince(new Date(lastSeen));
     }
 }
-
-var streamList = (function() {
-    var displayHidden = false;
-});
 
 function loadJSON(callback) {
     var xobj = new XMLHttpRequest();
