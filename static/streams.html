@@ -8,13 +8,13 @@
     <link href="favicon.ico" rel="icon" type="image/x-icon">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-sortable.css" rel="stylesheet">
-    <!--<link href="css/main.css" rel="stylesheet" type="text/css">-->
+    <link href="css/main.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
-<button onclick="createStreamTable()">Update</button>
+<button onclick="populateStreams()">Update</button>
 
-<div class="table-responsive">
+<div class="table-responsive" id="left-column">
     <table id="streams_table" class="table table-bordered table-hover table-condensed table-nonfluid sortable">
         <thead>
         <tr>

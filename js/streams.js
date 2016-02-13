@@ -27,11 +27,11 @@ function getTimeSince(date) {
     return getTimeString(days, "day");
 }
 
-function getLastSeenStatus(onlineSince, lastSeen) {
-    if (lastSeen === null) {
-        return "Never";
-    } else if (onlineSince !== null) {
+function getLastSeenStatus(isOnline, lastSeen) {
+    if (isOnline) {
         return "Now";
+    } else if (lastSeen === null) {
+        return "Never";
     } else {
         return getTimeSince(new Date(lastSeen));
     }
@@ -49,11 +49,7 @@ function loadJSON(callback) {
     xobj.send(null);
 }
 
-function capitalizeWord(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function createStreamTable() {
+function populateStreams() {
     loadJSON(function(response) {
         var newTbody = document.createElement("tbody");
 
@@ -71,29 +67,42 @@ function createStreamTable() {
                 }
 
                 var nickname = stream["nickname"];
-                var race = capitalizeWord(stream["game_info"]["race"]);
+                var race = stream["game_info"]["race"];
                 var viewers = stream["viewers"];
                 var maxViewers = stream["max_viewers"];
-                var lastSeenText = getLastSeenStatus(stream["online_since"], stream["last_seen"]);
+                var isOnline = stream["online_since"] !== null;
+                var lastSeenText = getLastSeenStatus(isOnline, stream["last_seen"]);
                 var lastSeenValue = stream["last_seen"] === null ? 0 : stream["last_seen"];
                 var url = "http://play.afreeca.com/" + stream["id"] + "/embed";
 
-                var textValueList = [
-                    [nickname, null],
-                    [race, null],
-                    [viewers, null],
-                    [maxViewers, null],
-                    [lastSeenText, lastSeenValue],
+                var cells = [
+                    [nickname, null ],
+                    [race, { "class": [ "text-capitalize" ] } ],
+                    [viewers, { "class": [ "text-right" ] } ],
+                    [maxViewers, { "class": [ "text-right" ] } ],
+                    [lastSeenText, { "data-value": lastSeenValue } ],
                 ];
 
                 var newRow = newTbody.insertRow(-1);
-                for (var i = 0; i < textValueList.length; i++) {
-                    var text = textValueList[i][0];
-                    var value = textValueList[i][1];
+                newRow.classList.add(isOnline ? "online" : "offline");
+                newRow.classList.add("race-" + race);
+                for (var i = 0; i < cells.length; i++) {
+                    var text = cells[i][0];
+                    var data = cells[i][1];
                     var newCell = newRow.insertCell(-1);
                     var textNode = document.createTextNode(text);
-                    if (value !== null) {
-                        newCell.setAttribute("data-value", value);
+                    if (data !== null) {
+                        for (var key in data) {
+                            if (data.hasOwnProperty(key)) {
+                                if (key === "class") {
+                                    for (var j = 0; j < data[key].length; j++) {
+                                        newCell.classList.add(data[key][j]);
+                                    }
+                                } else if (key.slice(0, 5) === "data-") {
+                                    newCell.setAttribute(key, data[key]);
+                                }
+                            }
+                        }
                     }
                     newCell.appendChild(textNode);
                 }
@@ -108,5 +117,5 @@ function createStreamTable() {
     });
 }
 
-createStreamTable();
+populateStreams();
 

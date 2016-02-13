@@ -1,3 +1,4 @@
+/*
 a
 {
   color:#666;
@@ -13,53 +14,11 @@ a:hover
   text-decoration:none;
 }
 
-body
-{
-  background-color:#fff;
-  float:left;
-  font-size:80%;
-}
-
 input[type=checkbox]
 {
   vertical-align:middle;
   position:relative;
   bottom:1px;
-}
-
-table
-{
-  border-collapse:collapse;
-  margin:5px;
-}
-
-td,th
-{
-  border:0;
-  padding:4px 10px;
-}
-
-th
-{
-  background-color:#5f5f5f;
-  color:#fff;
-  font-weight:700;
-  text-align:left;
-}
-
-td.viewers,td.high_viewers
-{
-  text-align:right;
-}
-
-tr.online
-{
-  background-color:#f1f1f1;
-}
-
-tr.offline
-{
-  background-color:#e4e4e4;
 }
 
 tr.show
@@ -76,17 +35,29 @@ th.show,td.show
 {
   display:none;
 }
+*/
 
-.footer
-{
-  margin-top:10px;
-  color:#222;
-  font-size:90%;
-  text-align:center;
-  padding:5px;
+.table tbody tr.online {
 }
 
-*
-{
-  font-family:helvetica,arial,sans-serif;
+.table tbody tr.offline {
+  opacity: 0.33;
+}
+
+.table tbody tr.race-protoss {
+  background-color: mintcream;
+}
+
+.table tbody tr.race-terran {
+  background-color: aliceblue;
+}
+
+.table tbody tr.race-zerg {
+  background-color: snow;
+}
+
+@media only screen and (min-width : 961px){
+  #left-column {
+    max-width: 640px;
+  }
 }
