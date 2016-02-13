@@ -72,11 +72,11 @@ function populateStreams() {
                 var maxViewers = stream["max_viewers"];
                 var isOnline = stream["online_since"] !== null;
                 var lastSeenText = getLastSeenStatus(isOnline, stream["last_seen"]);
-                var lastSeenValue = stream["last_seen"] === null ? 0 : stream["last_seen"];
+                var lastSeenValue = stream["last_seen"] || 0;
                 var url = "http://play.afreeca.com/" + stream["id"] + "/embed";
 
                 var cells = [
-                    [nickname, { "class": [ "race-" + race ] }],
+                    [nickname, { "class": [ "race-" + (race || "none") ] }],
                     [race, { "class": [ "text-capitalize" ] } ],
                     [viewers, { "class": [ "text-right" ] } ],
                     [maxViewers, { "class": [ "text-right" ] } ],

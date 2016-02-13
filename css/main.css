@@ -22,6 +22,10 @@ th.show,td.show
   opacity: 0.4;
 }
 
+.table tbody td.race-none {
+  background-image: linear-gradient(to right, #eaeaea, white);
+}
+
 .table tbody td.race-protoss {
   background-image: linear-gradient(to right, #efe, white);
 }
