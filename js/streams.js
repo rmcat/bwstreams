@@ -20,11 +20,11 @@ function getTimeSince(date) {
     }
 }
 
-function getLastSeenStatus(isOnline, lastSeen) {
-    if (isOnline) {
-        return "Now";
-    } else if (lastSeen === null) {
+function getLastSeenStatus(onlineSince, lastSeen) {
+    if (lastSeen === null) {
         return "Never";
+    } else if (onlineSince !== null) {
+        return "Now";
     } else {
         return getTimeSince(new Date(lastSeen));
     }
@@ -61,27 +61,37 @@ function createStreamTable() {
                 continue;
             }
             if (streams.hasOwnProperty(key)) {
-                var info = streams[key];
-                var game = info["game"];
+                var stream = streams[key];
+                var game = stream["game"];
                 if (game != "brood war") {
                     continue;
                 }
 
-                var nickname = info["nickname"];
-                var race = capitalizeWord(info["game_info"]["race"]);
-                var viewers = info["viewers"];
-                var maxViewers = info["max_viewers"];
-                var isOnline = info["online_since"] !== null;
-                var lastSeen = getLastSeenStatus(isOnline, info["last_seen"]);
-                var id = info["id"];
-                var url = "http://play.afreeca.com/" + id + "/embed"
+                var nickname = stream["nickname"];
+                var race = capitalizeWord(stream["game_info"]["race"]);
+                var viewers = stream["viewers"];
+                var maxViewers = stream["max_viewers"];
+                var lastSeenText = getLastSeenStatus(stream["online_since"], stream["last_seen"]);
+                var lastSeenValue = stream["last_seen"] === null ? 0 : stream["last_seen"];
+                var url = "http://play.afreeca.com/" + stream["id"] + "/embed";
+
+                var textValueList = [
+                    [nickname, null],
+                    [race, null],
+                    [viewers, null],
+                    [maxViewers, null],
+                    [lastSeenText, lastSeenValue],
+                ];
 
                 var newRow = newTbody.insertRow(-1);
-                var rowText = [ nickname, race, viewers, maxViewers, lastSeen ];
-                for (var i = 0; i < rowText.length; i++)
-                {
-                    var textNode = document.createTextNode(rowText[i]);
+                for (var i = 0; i < textValueList.length; i++) {
+                    var text = textValueList[i][0];
+                    var value = textValueList[i][1];
                     var newCell = newRow.insertCell(-1);
+                    var textNode = document.createTextNode(text);
+                    if (value !== null) {
+                        newCell.setAttribute("data-value", value);
+                    }
                     newCell.appendChild(textNode);
                 }
             }
@@ -89,8 +99,9 @@ function createStreamTable() {
 
         var table = document.getElementById(streamTableId);
         var oldTbody = document.getElementById(streamTableId).getElementsByTagName("tbody")[0];
-
         table.replaceChild(newTbody, oldTbody);
+
+        $.bootstrapSortable(false);
     });
 }
 

@@ -7,6 +7,7 @@
     <title>Brood War Streams</title>
     <link href="favicon.ico" rel="icon" type="image/x-icon">
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-sortable.css" rel="stylesheet">
     <!--<link href="css/main.css" rel="stylesheet" type="text/css">-->
 </head>
 <body>
@@ -14,14 +15,14 @@
 <button onclick="createStreamTable()">Update</button>
 
 <div class="table-responsive">
-    <table id="streams_table" class="table table-bordered table-hover table-condensed">
+    <table id="streams_table" class="table table-bordered table-hover table-condensed table-nonfluid sortable">
         <thead>
         <tr>
             <th>Streamer</th>
             <th>Race</th>
             <th>Viewers</th>
             <th>High</th>
-            <th>Last Seen</th>
+            <th data-defaultsort="desc">Last Seen</th>
         </tr>
         </thead>
         <tbody>
@@ -31,9 +32,8 @@
 
 <script src="/js/jquery-2.2.0.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-sortable.js"></script>
 <script src="js/streams.js"></script>
-<!--<script src="/js/jquery.sortElements.js"></script>-->
-<!--<script src="/js/streamer_list_sort.js"></script>-->
 
 </body>
 </html>
