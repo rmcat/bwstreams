@@ -1,26 +1,4 @@
 /*
-a
-{
-  color:#666;
-}
-
-a:visited
-{
-  color:#444;
-}
-
-a:hover
-{
-  text-decoration:none;
-}
-
-input[type=checkbox]
-{
-  vertical-align:middle;
-  position:relative;
-  bottom:1px;
-}
-
 tr.show
 {
   display:table-row;
@@ -54,6 +32,18 @@ th.show,td.show
 
 .table tbody td.race-zerg {
   background-image: linear-gradient(to right, #fee, white);
+}
+
+.table tbody td a, .table tbody td a:visited {
+  display: inline-block;
+  height:100%;
+  width:100%;
+  color:#222;
+}
+
+.table tbody td a:hover, .table tbody td a:active {
+  color:#222;
+  text-decoration:none;
 }
 
 @media only screen and (min-width : 961px){

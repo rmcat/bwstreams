@@ -89,7 +89,7 @@ function populateStreams() {
                     var text = cells[i][0];
                     var data = cells[i][1];
                     var newCell = newRow.insertCell(-1);
-                    var textNode = document.createTextNode(text);
+                    var linkText = document.createTextNode(text);
                     if (data !== null) {
                         for (var key in data) {
                             if (data.hasOwnProperty(key)) {
@@ -103,7 +103,10 @@ function populateStreams() {
                             }
                         }
                     }
-                    newCell.appendChild(textNode);
+                    var a = document.createElement("a");
+                    a.href = url;
+                    a.appendChild(linkText);
+                    newCell.appendChild(a);
                 }
             }
         }
