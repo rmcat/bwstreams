@@ -1,23 +1,28 @@
 var streamTableId = "streams_table";
 
 function getTimeSince(date) {
+    function getTimeString(unit, unitName) {
+        if (unit != 1) {
+            unitName = unitName + "s";
+        }
+        return unit + " " + unitName + " ago";
+    }
     var now = new Date();
     var delta = now - date;
-    var days = Math.floor(delta / (1000 * 60 * 60 * 24));
-    var hours = Math.floor(delta / (1000 * 60 * 60));
-    var minutes = Math.floor(delta / (1000 * 60));
     var seconds = Math.floor(delta / (1000));
-    if (days > 6) {
-        return date.toDateString().slice(4);
-    } else if (days >= 1) {
-        return days + " days ago";
-    } else if (hours > 0) {
-        return hours + " hours ago";
-    } else if (minutes > 0) {
-        return minutes + " minutes ago";
-    } else {
-        return seconds + " seconds ago";
+    if (seconds < 60) {
+        return getTimeString(seconds, "second");
     }
+    var minutes = Math.floor(delta / (1000 * 60));
+    if (minutes < 60) {
+        return getTimeString(minutes, "minute");
+    }
+    var hours = Math.floor(delta / (1000 * 60 * 60));
+    if (hours < 60) {
+        return getTimeString(hours, "hour");
+    }
+    var days = Math.floor(delta / (1000 * 60 * 60 * 24));
+    return getTimeString(days, "day");
 }
 
 function getLastSeenStatus(onlineSince, lastSeen) {
