@@ -76,16 +76,15 @@ function populateStreams() {
                 var url = "http://play.afreeca.com/" + stream["id"] + "/embed";
 
                 var cells = [
-                    [nickname, null ],
+                    [nickname, { "class": [ "race-" + race ] }],
                     [race, { "class": [ "text-capitalize" ] } ],
                     [viewers, { "class": [ "text-right" ] } ],
                     [maxViewers, { "class": [ "text-right" ] } ],
-                    [lastSeenText, { "data-value": lastSeenValue } ],
+                    [lastSeenText, { "class": [ "text-center" ], "data-value": lastSeenValue } ],
                 ];
 
                 var newRow = newTbody.insertRow(-1);
                 newRow.classList.add(isOnline ? "online" : "offline");
-                newRow.classList.add("race-" + race);
                 for (var i = 0; i < cells.length; i++) {
                     var text = cells[i][0];
                     var data = cells[i][1];

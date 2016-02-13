@@ -15,14 +15,14 @@
 <button onclick="populateStreams()">Update</button>
 
 <div class="table-responsive" id="left-column">
-    <table id="streams_table" class="table table-bordered table-hover table-condensed table-nonfluid sortable">
+    <table id="streams_table" class="table table-nonfluid sortable">
         <thead>
         <tr>
-            <th>Streamer</th>
-            <th>Race</th>
-            <th>Viewers</th>
-            <th>High</th>
-            <th data-defaultsort="desc">Last Seen</th>
+            <th class="col-sm-3">Streamer</th>
+            <th class="col-sm-1">Race</th>
+            <th class="col-sm-1 text-right">Viewers</th>
+            <th class="col-sm-1 text-right">High</th>
+            <th class="col-sm-2 text-center" data-defaultsort="desc">Last Seen</th>
         </tr>
         </thead>
         <tbody>

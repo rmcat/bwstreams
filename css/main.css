@@ -41,19 +41,19 @@ th.show,td.show
 }
 
 .table tbody tr.offline {
-  opacity: 0.33;
+  opacity: 0.4;
 }
 
-.table tbody tr.race-protoss {
-  background-color: mintcream;
+.table tbody td.race-protoss {
+  background-image: linear-gradient(to right, #efe, white);
 }
 
-.table tbody tr.race-terran {
-  background-color: aliceblue;
+.table tbody td.race-terran {
+  background-image: linear-gradient(to right, #e0f2ff, white);
 }
 
-.table tbody tr.race-zerg {
-  background-color: snow;
+.table tbody td.race-zerg {
+  background-image: linear-gradient(to right, #fee, white);
 }
 
 @media only screen and (min-width : 961px){
