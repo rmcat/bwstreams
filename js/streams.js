@@ -52,6 +52,8 @@ function loadJSON(callback) {
 
 function refreshStreams() {
     loadJSON(function(response) {
+        var hideOffline = $(".offline").size() > 0 && $(".offline :hidden").size() > 0;
+
         var newTbody = document.createElement("tbody");
 
         var json = JSON.parse(response);
@@ -117,7 +119,11 @@ function refreshStreams() {
         var oldTbody = document.getElementById(idTableStreams).getElementsByTagName("tbody")[0];
         table.replaceChild(newTbody, oldTbody);
 
-        $.bootstrapSortable(false);
+        $.bootstrapSortable(true);
+
+        if (hideOffline) {
+            $(".offline").hide();
+        }
     });
 }
 
@@ -125,4 +131,12 @@ jQuery(document).ready(function($) {
     refreshStreams();
 
     $("#btn-refresh").click(refreshStreams);
+
+    $("#btn-toggle-offline").click(function() {
+        $(".offline").toggle();
+    });
+
+    $("#btn-debug").click(function() {
+        // Debug
+    });
 });

@@ -1,20 +1,3 @@
-/*
-tr.show
-{
-  display:table-row;
-}
-
-th.show,td.show
-{
-  display:table-cell;
-}
-
-.hide
-{
-  display:none;
-}
-*/
-
 .table tbody td a, .table tbody td a:visited {
   display: inline-block;
   height: 100%;
