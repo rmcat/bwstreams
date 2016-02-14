@@ -15,15 +15,23 @@ th.show,td.show
 }
 */
 
+.table tbody td a, .table tbody td a:visited {
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  color: #222;
+  text-decoration: none;
+}
+
 .table tbody tr.online {
 }
 
 .table tbody tr.offline {
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 .table tbody td.race-none {
-  background-image: linear-gradient(to right, #eaeaea, white);
+  background-image: linear-gradient(to right, #fefbd0, white);
 }
 
 .table tbody td.race-protoss {
@@ -38,20 +46,29 @@ th.show,td.show
   background-image: linear-gradient(to right, #fee, white);
 }
 
-.table tbody td a, .table tbody td a:visited {
-  display: inline-block;
-  height:100%;
-  width:100%;
-  color:#222;
-}
-
-.table tbody td a:hover, .table tbody td a:active {
-  color:#222;
+.table-hover tbody tr:hover td {
+  background-image: none;
   text-decoration:none;
 }
 
-@media only screen and (min-width : 961px){
+.table-hover tbody tr.race-none:hover td {
+  background-color: #fefbd0;
+}
+
+.table-hover tbody tr.race-protoss:hover td {
+  background-color: #efe;
+}
+
+.table-hover tbody tr.race-terran:hover td {
+  background-color: #e0f2ff;
+}
+
+.table-hover tbody tr.race-zerg:hover td {
+  background-color: #fee;
+}
+
+@media only screen and (min-width : 641px){
   #left-column {
-    max-width: 640px;
+    max-width: 640px;;
   }
 }

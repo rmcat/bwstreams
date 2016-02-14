@@ -1,6 +1,7 @@
 "use strict";
 
-var streamTableId = "streams_table";
+var idTableStreams = "streams";
+
 
 function getTimeSince(date) {
     function getTimeString(unit, unitName) {
@@ -49,7 +50,7 @@ function loadJSON(callback) {
     xobj.send(null);
 }
 
-function populateStreams() {
+function refreshStreams() {
     loadJSON(function(response) {
         var newTbody = document.createElement("tbody");
 
@@ -85,6 +86,7 @@ function populateStreams() {
 
                 var newRow = newTbody.insertRow(-1);
                 newRow.classList.add(isOnline ? "online" : "offline");
+                newRow.classList.add("race-" + (race || "none"));
                 for (var i = 0; i < cells.length; i++) {
                     var text = cells[i][0];
                     var data = cells[i][1];
@@ -111,13 +113,13 @@ function populateStreams() {
             }
         }
 
-        var table = document.getElementById(streamTableId);
-        var oldTbody = document.getElementById(streamTableId).getElementsByTagName("tbody")[0];
+        var table = document.getElementById(idTableStreams);
+        var oldTbody = document.getElementById(idTableStreams).getElementsByTagName("tbody")[0];
         table.replaceChild(newTbody, oldTbody);
 
         $.bootstrapSortable(false);
     });
 }
 
-populateStreams();
+refreshStreams();
 

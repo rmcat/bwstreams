@@ -12,10 +12,12 @@
 </head>
 <body>
 
-<button onclick="populateStreams()">Update</button>
+<div>
+    <button type="button" class="btn btn-default" onclick="refreshStreams()">Refresh</button>
+</div>
 
 <div class="table-responsive" id="left-column">
-    <table id="streams_table" class="table table-condensed table-nonfluid sortable">
+    <table id="streams" class="table table-condensed table-bordered table-hover table-nonfluid sortable">
         <thead>
         <tr>
             <th class="col-sm-3">Streamer</th>
