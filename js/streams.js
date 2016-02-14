@@ -121,5 +121,8 @@ function refreshStreams() {
     });
 }
 
-refreshStreams();
+jQuery(document).ready(function($) {
+    refreshStreams();
 
+    $("#btn-refresh").click(refreshStreams);
+});
