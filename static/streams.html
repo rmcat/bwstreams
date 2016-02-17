@@ -8,13 +8,13 @@
     <link href="favicon.ico" rel="icon" type="image/x-icon">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-sortable.css" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/main.css" rel="stylesheet">
 </head>
 <body>
 
-<div class="table-responsive" id="left-column">
-    <div style="float: right; margin-bottom: 10px">
-        <div class="btn-group no-transition" data-toggle="buttons">
+<div id="left-column">
+    <div style="text-align: right; margin: 10px">
+        <div class="btn-group" data-toggle="buttons">
             <label id="radio-show-all" class="btn btn-default active">
                 <input type="radio" name="show-type" autocomplete="off" checked>All
             </label>
@@ -26,19 +26,23 @@
         <button id="btn-refresh" type="button" class="btn btn-default">Refresh</button>
     </div>
 
-    <table id="streams" class="table table-condensed table-bordered table-hover table-nonfluid sortable">
-        <thead>
-        <tr>
-            <th class="col-sm-3">Streamer</th>
-            <th class="col-sm-1">Race</th>
-            <th class="col-sm-1">Viewers</th>
-            <th class="col-sm-1">High</th>
-            <th class="col-sm-2" data-defaultsort="desc">Last Seen</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+    <div style="clear:both"></div>
+
+    <div class="table-responsive" style="margin: 10px">
+        <table id="streams" class="table table-bordered table-hover table-nonfluid sortable">
+            <thead>
+            <tr>
+                <th class="col-sm-3">Streamer</th>
+                <th class="col-sm-1">Race</th>
+                <th class="col-sm-1">Viewers</th>
+                <th class="col-sm-1">High</th>
+                <th class="col-sm-2" data-defaultsort="desc">Last Seen</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script src="js/jquery-2.2.0.js"></script>
