@@ -1,9 +1,4 @@
 cron:
-- description: Update database during peak hours
+- description: Update database
   url: /admin/update_database
-  schedule: every 5 minutes from 18:00 to 00:00
-  timezone: Asia/Seoul
-- description: Update database during off-peak hours
-  url: /admin/update_database
-  schedule: every 10 minutes from 00:00 to 18:00
-  timezone: Asia/Seoul
+  schedule: every 2 minutes
