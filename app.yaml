@@ -22,7 +22,7 @@ handlers:
   script: src.app.app
 - url: /
   static_files: static/streams.html
-  upload: streams.html
+  upload: static/streams.html
 - url: /admin/.*
   script: src.app.app
   login: admin
