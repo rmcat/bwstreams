@@ -132,8 +132,14 @@ jQuery(document).ready(function($) {
 
     $("#btn-refresh").click(refreshStreams);
 
-    $("#btn-toggle-offline").click(function() {
-        $(".offline").toggle();
+    $("#radio-show-all").click(function() {
+    console.log('showall');
+        $(".offline").show();
+    });
+
+    $("#radio-show-online").click(function() {
+    console.log('showonline');
+        $(".offline").hide();
     });
 
     $("#btn-debug").click(function() {

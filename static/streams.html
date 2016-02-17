@@ -14,8 +14,15 @@
 
 <div class="table-responsive" id="left-column">
     <div style="float: right; margin-bottom: 10px">
+        <div class="btn-group no-transition" data-toggle="buttons">
+            <label id="radio-show-all" class="btn btn-default active">
+                <input type="radio" name="show-type" autocomplete="off" checked>All
+            </label>
+            <label id="radio-show-online" class="btn btn-default">
+                <input type="radio" name="show-type" autocomplete="off">Online
+            </label>
+        </div>
         <!--<button id="btn-debug" type="button" class="btn btn-default">Debug</button>-->
-        <button id="btn-toggle-offline" type="button" class="btn btn-default">Toggle offline</button>
         <button id="btn-refresh" type="button" class="btn btn-default">Refresh</button>
     </div>
 
