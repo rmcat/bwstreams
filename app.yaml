@@ -10,6 +10,8 @@ builtins:
 handlers:
 - url: /css
   static_dir: css
+- url: /font-awesome
+  static_dir: font-awesome
 - url: /fonts
   static_dir: js
 - url: /js
