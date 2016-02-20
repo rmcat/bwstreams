@@ -133,6 +133,7 @@ function refreshComplete() {
     updateOfflineVisibility();
     $("#btn-refresh").removeClass("fa-spin");
     $("#btn-refresh").removeClass("active");
+    resetTimer();
 }
 
 function updateOfflineVisibility() {
@@ -143,14 +144,47 @@ function updateOfflineVisibility() {
     }
 }
 
+var timerEnabled = false;
+var timerDuration = 120;
+var timerElapsed = 0;
+var timerId = null;
+
+function updateTimerStatus() {
+    timerEnabled = $("#checkbox-autorefresh").is(":checked");
+    if (timerEnabled) {
+        if (timerId == null) {
+            startTimer();
+        }
+    }
+}
+
+function resetTimer() {
+    timerElapsed = 0;
+}
+
+function stopTimer() {
+    if (timerId != null) {
+        clearInterval(timerId);
+        timerId = null;
+    }
+}
+
+function startTimer() {
+    timerId = setInterval(function() {
+        ++timerElapsed;
+        if (timerEnabled && timerElapsed >= timerDuration) {
+            refreshStreams();
+        }
+    }, 1000);
+}
+
 jQuery(document).ready(function($) {
     refreshStreams();
+    updateTimerStatus();
 
     $("#btn-refresh").click(refreshStreams);
 
     $("#checkbox-show-offline").click(updateOfflineVisibility);
 
-    $("#btn-debug").click(function() {
-        // Debug
-    });
+    $("#checkbox-autorefresh").click(updateTimerStatus);
 });
