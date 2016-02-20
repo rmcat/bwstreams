@@ -1,8 +1,5 @@
 "use strict";
 
-var idTableStreams = "streams";
-
-
 function getTimeSince(date) {
     function getTimeString(unit, unitName) {
         if (unit != 1) {
@@ -51,6 +48,7 @@ function loadJSON(callback) {
 }
 
 function refreshStreams() {
+    refreshStarted();
     loadJSON(function(response) {
         var hideOffline = $(".offline").size() > 0 && $(".offline :hidden").size() > 0;
 
@@ -115,16 +113,34 @@ function refreshStreams() {
             }
         }
 
+        var idTableStreams = "streams";
         var table = document.getElementById(idTableStreams);
         var oldTbody = document.getElementById(idTableStreams).getElementsByTagName("tbody")[0];
         table.replaceChild(newTbody, oldTbody);
 
         $.bootstrapSortable(true);
 
-        if (hideOffline) {
-            $(".offline").hide();
-        }
+        refreshComplete();
     });
+}
+
+function refreshStarted() {
+    $("#btn-refresh").addClass("fa-spin");
+    $("#btn-refresh").addClass("active");
+}
+
+function refreshComplete() {
+    updateOfflineVisibility();
+    $("#btn-refresh").removeClass("fa-spin");
+    $("#btn-refresh").removeClass("active");
+}
+
+function updateOfflineVisibility() {
+    if ($("#checkbox-show-offline").is(":checked")) {
+        $(".offline").show();
+    } else {
+        $(".offline").hide();
+    }
 }
 
 jQuery(document).ready(function($) {
@@ -132,15 +148,7 @@ jQuery(document).ready(function($) {
 
     $("#btn-refresh").click(refreshStreams);
 
-    $("#radio-show-all").click(function() {
-    console.log('showall');
-        $(".offline").show();
-    });
-
-    $("#radio-show-online").click(function() {
-    console.log('showonline');
-        $(".offline").hide();
-    });
+    $("#checkbox-show-offline").click(updateOfflineVisibility);
 
     $("#btn-debug").click(function() {
         // Debug

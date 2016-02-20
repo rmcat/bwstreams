@@ -43,7 +43,7 @@
 
 .table-hover tbody tr:hover td {
   background-image: none;
-  text-decoration:none;
+  text-decoration: none;
 }
 
 .table-hover tbody tr.race-none:hover td {
@@ -62,8 +62,20 @@
   background-color: rgba(255,238,238,1);
 }
 
-@media only screen and (min-width: 769px){
+@media only screen and (min-width: 769px) {
   #left-column {
     max-width: 768px;;
   }
+}
+
+#btn-refresh {
+  color: #060;
+}
+
+#btn-refresh.active {
+  color: #090 !important;
+}
+
+#btn-refresh:hover {
+  color: #0c0;
 }

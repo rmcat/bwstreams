@@ -8,22 +8,29 @@
     <link href="favicon.ico" rel="icon" type="image/x-icon">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-sortable.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/awesome-bootstrap-checkbox.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
 </head>
 <body>
 
 <div id="left-column">
     <div style="text-align: right; margin: 10px">
-        <div class="btn-group" data-toggle="buttons">
-            <label id="radio-show-all" class="btn btn-default active">
-                <input type="radio" name="show-type" autocomplete="off" checked>All
-            </label>
-            <label id="radio-show-online" class="btn btn-default">
-                <input type="radio" name="show-type" autocomplete="off">Online
+        <div class="checkbox checkbox-inline">
+            <input id="checkbox-show-offline" type="checkbox" autocomplete="off">
+            <label for="checkbox-show-offline">
+                Show offline
             </label>
         </div>
-        <!--<button id="btn-debug" type="button" class="btn btn-default">Debug</button>-->
-        <button id="btn-refresh" type="button" class="btn btn-default">Refresh</button>
+        <div class="checkbox checkbox-inline">
+            <input id="checkbox-autorefresh" type="checkbox" autocomplete="off" checked>
+            <label for="checkbox-autorefresh">
+                Auto-refresh
+            </label>
+        </div>
+        <div style="margin-left: 10px; display: inline-block">
+            <i id="btn-refresh" class="btn-refresh fa fa-lg fa-spinner" title="Refresh"></i>
+        </div>
     </div>
 
     <div style="clear:both"></div>
