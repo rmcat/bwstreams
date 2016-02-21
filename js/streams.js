@@ -1,37 +1,12 @@
 "use strict";
 
-function getTimeSince(date) {
-    function getTimeString(unit, unitName) {
-        if (unit != 1) {
-            unitName = unitName + "s";
-        }
-        return unit + " " + unitName + " ago";
-    }
-    var now = new Date();
-    var delta = now - date;
-    var seconds = Math.floor(delta / (1000));
-    if (seconds < 60) {
-        return getTimeString(seconds, "second");
-    }
-    var minutes = Math.floor(delta / (1000 * 60));
-    if (minutes < 60) {
-        return getTimeString(minutes, "minute");
-    }
-    var hours = Math.floor(delta / (1000 * 60 * 60));
-    if (hours < 24) {
-        return getTimeString(hours, "hour");
-    }
-    var days = Math.floor(delta / (1000 * 60 * 60 * 24));
-    return getTimeString(days, "day");
-}
-
 function getLastSeenStatus(isOnline, lastSeen) {
     if (isOnline) {
         return "Now";
     } else if (lastSeen === null) {
         return "Never";
     } else {
-        return getTimeSince(new Date(lastSeen));
+        return moment(lastSeen).fromNow();
     }
 }
 
