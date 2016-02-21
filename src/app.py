@@ -77,7 +77,7 @@ def increment_hit_counter(key):
 
 class InitialiseDatabaseHandler(webapp2.RequestHandler):
     def get(self):
-        logger.info('Initialising database')
+        logger.info('Database init started')
         afreeca_json = streams.afreeca_init_db_json
         init_db = streams.get_initial_database(afreeca_json)
         init_db_json = utils.dict_to_json(init_db)
@@ -90,18 +90,37 @@ class InitialiseDatabaseHandler(webapp2.RequestHandler):
             ndb_set_value(HitCounter, datastore_key_hits_streams_json, 0, True)
         except KeyError:
             pass
-        logger.info('Initialisation complete')
+        logger.info('Database init finished')
 
 
 class UpdateDatabaseHandler(webapp2.RequestHandler):
     @ndb.transactional(xg=True)
     @utils.wrap_exception
     def get(self):
-        logger.info('Updating database')
+        logger.info('Update started')
         utc_now = datetime.datetime.utcnow()
         update_database()
         modify_last_update_time(utc_now)
-        logger.info('Update complete')
+        logger.info('Update finished')
+
+
+class BackupDatabaseHandler(webapp2.RequestHandler):
+    # @ndb.transactional(xg=True)
+    @utils.wrap_exception
+    def get(self):
+        logger.info('Backup started')
+        db = memcache.get(memcache_key_database)
+        if db is None:
+            logger.warn('memcache failed on key: {}'.format(memcache_key_database))
+            db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
+            db = utils.json_to_dict(db_json)
+            memcache.set(memcache_key_database, db)
+        db_json = utils.dict_to_json(db)
+        utc_now = datetime.datetime.utcnow()
+        datastore_key_database_backup = 'backup_{}'.format(utc_now.strftime('%Y-%m-%d'))
+        logger.info('Backup database to key: {}'.format(datastore_key_database_backup))
+        ndb_set_value(JsonDatabase, datastore_key_database_backup, db_json)
+        logger.info('Backup finished')
 
 
 class StreamsJsonHandler(webapp2.RequestHandler):
@@ -132,6 +151,7 @@ class StreamsJsonHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/admin/update_database', UpdateDatabaseHandler),
+    ('/admin/backup_database', BackupDatabaseHandler),
     ('/admin/initialise_database', InitialiseDatabaseHandler),
     ('/streams.json', StreamsJsonHandler),
 ], debug=True)
