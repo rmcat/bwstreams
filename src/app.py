@@ -104,23 +104,35 @@ class UpdateDatabaseHandler(webapp2.RequestHandler):
         logger.info('Update finished')
 
 
+@ndb.transactional()
+def backup_database(backup_key):
+    db = memcache.get(memcache_key_database)
+    if db is None:
+        logger.warn('memcache failed on key: {}'.format(memcache_key_database))
+        db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
+        db = utils.json_to_dict(db_json)
+        memcache.set(memcache_key_database, db)
+    db_json = utils.dict_to_json(db)
+    logger.info('Backup database to key: {}'.format(backup_key))
+    ndb_set_value(JsonDatabase, backup_key, db_json)
+
+
 class BackupDatabaseHandler(webapp2.RequestHandler):
-    # @ndb.transactional(xg=True)
     @utils.wrap_exception
     def get(self):
         logger.info('Backup started')
-        db = memcache.get(memcache_key_database)
-        if db is None:
-            logger.warn('memcache failed on key: {}'.format(memcache_key_database))
-            db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
-            db = utils.json_to_dict(db_json)
-            memcache.set(memcache_key_database, db)
-        db_json = utils.dict_to_json(db)
         utc_now = datetime.datetime.utcnow()
         datastore_key_database_backup = 'backup_{}'.format(utc_now.strftime('%Y-%m-%d'))
-        logger.info('Backup database to key: {}'.format(datastore_key_database_backup))
-        ndb_set_value(JsonDatabase, datastore_key_database_backup, db_json)
+        backup_database(datastore_key_database_backup)
         logger.info('Backup finished')
+
+
+class BackupManualHandler(webapp2.RequestHandler):
+    @utils.wrap_exception
+    def get(self):
+        logger.info('Backup temp started')
+        backup_database('backup_manual')
+        logger.info('Backup temp finished')
 
 
 class StreamsJsonHandler(webapp2.RequestHandler):
@@ -152,6 +164,7 @@ class StreamsJsonHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/admin/update_database', UpdateDatabaseHandler),
     ('/admin/backup_database', BackupDatabaseHandler),
+    ('/admin/backup_manual', BackupManualHandler),
     ('/admin/initialise_database', InitialiseDatabaseHandler),
     ('/streams.json', StreamsJsonHandler),
 ], debug=True)
