@@ -112,6 +112,7 @@ class StreamsJsonHandler(webapp2.RequestHandler):
         # Get database
         db = memcache.get(memcache_key_database)
         if db is None:
+            logger.warn('memcache failed on key: {}'.format(memcache_key_database))
             db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
             db = utils.json_to_dict(db_json)
             memcache.set(memcache_key_database, db)
@@ -119,6 +120,7 @@ class StreamsJsonHandler(webapp2.RequestHandler):
         # Get last update time
         last_update_time = memcache.get(memcache_key_last_update)
         if last_update_time is None:
+            logger.warn('memcache failed on key: {}'.format(memcache_key_last_update))
             last_update_time = ndb_get_entity(Time, datastore_key_last_update).value
             memcache.set(memcache_key_last_update, last_update_time)
 
@@ -132,5 +134,4 @@ app = webapp2.WSGIApplication([
     ('/admin/update_database', UpdateDatabaseHandler),
     ('/admin/initialise_database', InitialiseDatabaseHandler),
     ('/streams.json', StreamsJsonHandler),
-    ('/', StreamsJsonHandler),
 ], debug=True)
