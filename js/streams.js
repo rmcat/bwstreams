@@ -130,10 +130,8 @@ var timerId = null;
 
 function updateTimerStatus() {
     timerEnabled = $("#checkbox-autorefresh").is(":checked");
-    if (timerEnabled) {
-        if (timerId == null) {
-            startTimer();
-        }
+    if (timerEnabled && timerId == null) {
+        startTimer();
     }
 }
 
