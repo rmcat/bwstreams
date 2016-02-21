@@ -102,6 +102,7 @@ function refreshStreams() {
 function refreshStarted() {
     $("#btn-refresh").addClass("fa-spin");
     $("#btn-refresh").addClass("active");
+    resetTimer();
 }
 
 function refreshComplete(lastUpdateTimeStr) {
