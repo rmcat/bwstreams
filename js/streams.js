@@ -25,8 +25,6 @@ function loadJSON(callback) {
 function refreshStreams() {
     refreshStarted();
     loadJSON(function(response) {
-        var hideOffline = $(".offline").size() > 0 && $(".offline :hidden").size() > 0;
-
         var newTbody = document.createElement("tbody");
 
         var json = JSON.parse(response);
