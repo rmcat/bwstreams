@@ -98,7 +98,7 @@ function refreshStreams() {
 function refreshStarted() {
     $("#btn-refresh").addClass("fa-spin");
     $("#btn-refresh").addClass("active");
-    resetTimer();
+    timer.resetTimer();
 }
 
 function refreshComplete(lastUpdateTimeStr) {
@@ -121,45 +121,47 @@ function setLastUpdate(timeStr) {
     $("#text-last-updated").text(moment(timeStr).format("lll"));
 }
 
-var timerEnabled = false;
-var timerDuration = 120;
-var timerElapsed = 0;
-var timerId = null;
+var timer = {
+    timerEnabled: false,
+    timerDuration: 120,
+    timerElapsed: 0,
+    timerId: null,
 
-function updateTimerStatus() {
-    timerEnabled = $("#checkbox-autorefresh").is(":checked");
-    if (timerEnabled && timerId == null) {
-        startTimer();
-    }
-}
-
-function resetTimer() {
-    timerElapsed = 0;
-}
-
-function stopTimer() {
-    if (timerId != null) {
-        clearInterval(timerId);
-        timerId = null;
-    }
-}
-
-function startTimer() {
-    timerId = setInterval(function() {
-        ++timerElapsed;
-        if (timerEnabled && timerElapsed >= timerDuration) {
-            refreshStreams();
+    updateTimerStatus: function() {
+        this.timerEnabled = $("#checkbox-autorefresh").is(":checked");
+        if (this.timerEnabled && this.timerId == null) {
+            this.startTimer();
         }
-    }, 1000);
+    },
+
+    resetTimer: function() {
+        this.timerElapsed = 0;
+    },
+
+    stopTimer: function() {
+        if (this.timerId != null) {
+            clearInterval(this.timerId);
+            this.timerId = null;
+        }
+    },
+
+    startTimer: function() {
+        this.timerId = setInterval(function() {
+            ++this.timerElapsed;
+            if (this.timerEnabled && this.timerElapsed >= this.timerDuration) {
+                refreshStreams();
+            }
+        }, 1000);
+    }
 }
 
 jQuery(document).ready(function($) {
     refreshStreams();
-    updateTimerStatus();
+    timer.updateTimerStatus();
 
     $("#btn-refresh").click(refreshStreams);
 
     $("#checkbox-show-offline").click(updateOfflineVisibility);
 
-    $("#checkbox-autorefresh").click(updateTimerStatus);
+    $("#checkbox-autorefresh").click(timer.updateTimerStatus);
 });
