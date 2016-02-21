@@ -93,8 +93,6 @@ function refreshStreams() {
         var oldTbody = document.getElementById(idTableStreams).getElementsByTagName("tbody")[0];
         table.replaceChild(newTbody, oldTbody);
 
-        $.bootstrapSortable(true);
-
         refreshComplete(json.last_update);
     });
 }
@@ -106,6 +104,7 @@ function refreshStarted() {
 }
 
 function refreshComplete(lastUpdateTimeStr) {
+    $.bootstrapSortable(true);
     updateOfflineVisibility();
     $("#btn-refresh").removeClass("fa-spin");
     $("#btn-refresh").removeClass("active");
