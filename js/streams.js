@@ -146,12 +146,12 @@ var timer = {
     },
 
     startTimer: function() {
-        this.timerId = setInterval(function() {
+        this.timerId = setInterval((function() {
             ++this.timerElapsed;
             if (this.timerEnabled && this.timerElapsed >= this.timerDuration) {
                 refreshStreams();
             }
-        }, 1000);
+        }).bind(this), 1000);
     }
 }
 
