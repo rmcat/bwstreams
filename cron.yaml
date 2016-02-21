@@ -1,7 +1,7 @@
 cron:
 - description: database update
   url: /admin/update_database
-  schedule: every 2 minutes
+  schedule: every 1 minutes
 - description: daily database backup
   url: /admin/backup_database
   schedule: every 24 hours

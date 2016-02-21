@@ -118,7 +118,7 @@ var updater = {
 
 var timer = {
     timerEnabled: false,
-    timerDuration: 120,
+    timerDuration: 60,
     timerElapsed: 0,
     timerId: null,
 
