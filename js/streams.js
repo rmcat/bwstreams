@@ -95,7 +95,7 @@ function refreshStreams() {
 
         $.bootstrapSortable(true);
 
-        refreshComplete();
+        refreshComplete(json.last_update);
     });
 }
 
@@ -104,11 +104,11 @@ function refreshStarted() {
     $("#btn-refresh").addClass("active");
 }
 
-function refreshComplete() {
+function refreshComplete(lastUpdateTimeStr) {
     updateOfflineVisibility();
     $("#btn-refresh").removeClass("fa-spin");
     $("#btn-refresh").removeClass("active");
-    resetTimer();
+    setLastUpdate(lastUpdateTimeStr);
 }
 
 function updateOfflineVisibility() {
@@ -117,6 +117,10 @@ function updateOfflineVisibility() {
     } else {
         $(".offline").hide();
     }
+}
+
+function setLastUpdate(timeStr) {
+    $("#text-last-updated").text(moment(timeStr).format("lll"));
 }
 
 var timerEnabled = false;
