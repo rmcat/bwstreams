@@ -66,6 +66,7 @@ function replaceTable(streams) {
                 }
                 var a = document.createElement("a");
                 a.href = url;
+                a.rel = "noreferrer";
                 a.appendChild(linkText);
                 newCell.appendChild(a);
             }
