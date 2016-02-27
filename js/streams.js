@@ -27,6 +27,7 @@ function replaceTable(streams) {
 
             var nickname = stream["nickname"];
             var race = stream["game_info"]["race"];
+            var raceText = race ? race : "\u2000"; // workaround for no td link
             var viewers = stream["viewers"];
             var maxViewers = stream["max_viewers"];
             var isOnline = stream["online_since"] !== null;
@@ -36,7 +37,7 @@ function replaceTable(streams) {
 
             var cells = [
                 [nickname, { "class": [ "race-" + (race || "none") ] }],
-                [race, { "class": [ "text-capitalize" ] } ],
+                [raceText, { "class": [ "text-capitalize" ] } ],
                 [viewers, { "class": [ "text-right" ] } ],
                 [maxViewers, { "class": [ "text-right" ] } ],
                 [lastSeenText, { "class": [ "text-center" ], "data-value": lastSeenValue } ],
