@@ -37,7 +37,7 @@ function replaceTable(streams) {
 
             var cells = [
                 [nickname, { "class": [ "race-" + (race || "none") ] }],
-                [raceText, { "class": [ "text-capitalize" ] } ],
+                [raceText, { "class": [ "text-capitalize", "hidden-xs" ] } ],
                 [viewers, { "class": [ "text-right" ] } ],
                 [maxViewers, { "class": [ "text-right" ] } ],
                 [lastSeenText, { "class": [ "text-center" ], "data-value": lastSeenValue } ],
