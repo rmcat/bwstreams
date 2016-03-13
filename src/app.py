@@ -22,11 +22,11 @@ class JsonDatabase(ndb.Model):
 
 
 class Time(ndb.Model):
-    value = ndb.DateTimeProperty()
+    value = ndb.DateTimeProperty(indexed=False)
 
 
 class HitCounter(ndb.Model):
-    value = ndb.IntegerProperty(default=0)
+    value = ndb.IntegerProperty(default=0, indexed=False)
 
 
 def ndb_set_value(kind, id, value, create_only=False):
