@@ -1,53 +1,17 @@
-.table th {
-  background-color: #444;
-  color: white;
-  font-weight: 500;
-}
-
-.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td{
-  padding-top: 2px;
-  padding-bottom: 2px;
-  border: 0px;
+body {
+  font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
 }
 
 .table tbody td a, .table tbody td a:visited {
   display: inline-block;
   height: 100%;
   width: 100%;
-  color: #444;
+  color: black;
   text-decoration: none;
-}
-
-.table tbody tr.online {
 }
 
 .table tbody tr.offline {
-  opacity: 0.3;
-}
-
-.table tbody td.race-none {
-  background-image: linear-gradient(to right, rgba(255,255,204,1), rgba(255,255,204,0));
-}
-
-.table tbody td.race-protoss {
-  background-image: linear-gradient(to right, rgba(225,255,225,1), rgba(225,255,225,0));
-}
-
-.table tbody td.race-terran {
-  background-image: linear-gradient(to right, rgba(223,238,255,1), rgba(223,238,255,0));
-}
-
-.table tbody td.race-zerg {
-  background-image: linear-gradient(to right, rgba(255,238,238,1), rgba(255,238,238,0));
-}
-
-.table-hover tbody tr:hover td {
-  background-image: none;
-  text-decoration: none;
-}
-
-.table-hover tbody tr.race-none:hover td {
-  background-color: rgba(255,255,204,1);
+  opacity: 0.5;
 }
 
 .table-hover tbody tr.race-protoss:hover td {

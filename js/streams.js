@@ -2,9 +2,9 @@
 
 function getLastSeenStatus(isOnline, lastSeen) {
     if (isOnline) {
-        return "Now";
+        return "now";
     } else if (lastSeen === null) {
-        return "Never";
+        return "never";
     } else {
         return moment(lastSeen).fromNow();
     }
