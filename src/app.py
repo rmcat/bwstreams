@@ -49,6 +49,18 @@ def ndb_get_entity(kind, id):
     return ndb_entity
 
 
+def edit_database(db_json):
+    db = utils.json_to_dict(db_json)
+
+    utc_now = datetime.datetime.utcnow()
+    datastore_key_database_backup = 'backup_edit_{}'.format(utc_now.strftime('%Y-%m-%d_%H-%M_%S'))
+    backup_database(datastore_key_database_backup)
+
+    ndb_set_value(JsonDatabase, datastore_key_database, db_json)
+    memcache.delete(memcache_key_database)
+    memcache.set(memcache_key_database, db)
+
+
 def update_database():
     db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
     db = utils.json_to_dict(db_json)
@@ -117,6 +129,16 @@ def backup_database(backup_key):
     ndb_set_value(JsonDatabase, backup_key, db_json)
 
 
+class AdminHandler(webapp2.RequestHandler):
+    def post(self):
+        updated_db_json = self.request.get('database')
+        self.response.write('<html><body><textarea readonly rows="80" cols="120">')
+        self.response.write(updated_db_json)
+        self.response.write('</textarea></body></html>')
+        logger.info('Editing database: {}'.format(updated_db_json))
+        edit_database(updated_db_json)
+
+
 class BackupDatabaseHandler(webapp2.RequestHandler):
     @utils.wrap_exception
     def get(self):
@@ -166,5 +188,6 @@ app = webapp2.WSGIApplication([
     ('/admin/backup_database', BackupDatabaseHandler),
     ('/admin/backup_manual', BackupManualHandler),
     ('/admin/initialise_database', InitialiseDatabaseHandler),
+    ('/admin/edit_database', AdminHandler),
     ('/streams.json', StreamsJsonHandler),
 ], debug=True)

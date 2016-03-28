@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Brood War Streams Admin</title>
+<link href="css/jsondiffpatch/html.css" rel="stylesheet">
+<link href="css/jsondiffpatch/annotated.css" rel="stylesheet">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<style>
+body {
+    background-color: #eee;
+}
+
+.center {
+    float: none;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.table-nonfluid {
+   width: auto !important;
+}
+
+.table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+    border: none;
+}
+
+.json-panel {
+    float: left;
+    width: 50%;
+    text-align: center;
+}
+
+.json-input textarea {
+    width: 95%;
+    height: 200px;
+}
+</style>
+</head>
+<body>
+
+<div class="panel panel-default panel center"><div class="panel-body">
+
+<div>
+    <form>
+    <table class="table table-nonfluid table-condensed table-borderless">
+        <tr>
+            <td>Operation</td>
+            <td>
+                <select id="operation-type" class="form-control">
+                    <option value="add">Add</option>
+                    <option value="edit">Edit</option>
+                    <option value="rename">Rename</option>
+                    <option value="delete">Delete</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>ID</td>
+            <td>
+                <select id="stream-id" class="form-control"></select>
+            </td>
+        </tr>
+        <tr>
+            <td>New ID</td>
+            <td>
+                <input id="new-id" class="form-control" value="">
+            </td>
+        </tr>
+        <tr>
+            <td>Nickname</td>
+            <td>
+                 <input id="nickname" class="form-control" value="">
+            </td>
+        </tr>
+        <tr>
+            <td>Race</td>
+            <td>
+                 <select id="race" class="form-control">
+                    <option value="None">None</option>
+                    <option value="Protoss">Protoss</option>
+                    <option value="Terran">Terran</option>
+                    <option value="Zerg">Zerg</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Max Viewers</td>
+            <td>
+                 <input id="max-viewers" class="form-control" value="">
+            </td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 10px">
+        <input class="btn btn-default" type="button" value="Modify JSON" onclick="modifyJson()">
+        <input class="btn btn-default" type="reset" value="Reset">
+        <input class="btn btn-default" type="button" value="Refresh" onclick="getData()">
+    </div>
+    </form>
+</div>
+
+<form action="/admin/edit_database" method="post">
+<div>
+    <div class="json-panel">
+        <label for="json-input-left"><h2>left.json</h2></label>
+        <div class="json-input">
+            <textarea id="json-input-left" class="form-control" readonly></textarea>
+        </div>
+    </div>
+    <div class="json-panel">
+        <label for="json-input-right"><h2>right.json</h2></label>
+        <div class="json-input">
+            <textarea id="json-input-right" class="form-control" name="database"></textarea>
+        </div>
+    </div>
+</div>
+
+<div style="height: 10px; clear: both;"></div>
+<div id="syntax-errors"></div>
+<div id="visual"></div>
+<div style="height: 10px; clear: both;"></div>
+<div><input class="btn btn-default" type="submit" value="Edit Database"></div>
+</form>
+
+</div></div>
+
+<script src="js/jquery-2.2.0.js"></script>
+<script type="text/javascript" src="js/jsondiffpatch/jsondiffpatch.min.js"></script>
+<script type="text/javascript" src="js/jsondiffpatch/jsondiffpatch-formatters.min.js"></script>
+<script>
+"use strict";
+let leftTextId = "json-input-left";
+let rightTextId = "json-input-right";
+let opSelectId = "operation-type";
+let streamSelectId = "stream-id";
+let visualDiffId = "visual";
+let syntaxErrorsId = "syntax-errors";
+
+function streamAdd() {
+    alert("streamAdd()");
+}
+
+function streamEdit() {
+    alert("streamEdit()");
+}
+
+function streamRename() {
+    alert("streamRename()");
+}
+
+function streamDelete() {
+    let json = JSON.parse(document.getElementById(leftTextId).value);
+    let deleteId = document.getElementById(streamSelectId).value;
+    if (!deleteId) {
+        return;
+    }
+    for (let key in json) {
+        if (json.hasOwnProperty(key)) {
+            if (key === deleteId) {
+                delete json[key];
+            }
+        }
+    }
+    postOperation(json);
+}
+
+function updateVisualDiff() {
+    try {
+        var left = JSON.parse(document.getElementById(leftTextId).value);
+        var right = JSON.parse(document.getElementById(rightTextId).value);
+    } catch (err) {
+        document.getElementById(visualDiffId).innerHTML = "";
+        document.getElementById(syntaxErrorsId).innerHTML = err;
+        return;
+    }
+
+    let delta = jsondiffpatch.diff(left, right);
+    document.getElementById(syntaxErrorsId).innerHTML = "";
+    document.getElementById(visualDiffId).innerHTML = jsondiffpatch.formatters.html.format(delta, left);
+}
+
+function updateTextArea(textAreaId, json) {
+    document.getElementById(textAreaId).value = JSON.stringify(json);
+}
+
+function postOperation(json) {
+    updateTextArea(rightTextId, json);
+    updateVisualDiff();
+}
+
+function getData() {
+    $.getJSON("/streams.json", function(json) {
+        if (!json.hasOwnProperty("streams")) {
+            return;
+        }
+        let streams = json["streams"];
+        updateTextArea(leftTextId, streams);
+        updateTextArea(rightTextId, streams);
+
+        let streamIds = [ "" ];
+        for (let key in streams) {
+            if (streams.hasOwnProperty(key)) {
+                streamIds.push(key);
+            }
+        }
+        updateStreamIds(streamIds);
+    });
+}
+
+function updateStreamIds(list) {
+    let select = document.getElementById(streamSelectId);
+    for (let i = select.options.length - 1; i >= 0; i--) {
+        select.remove(i);
+    }
+    for (let i = 0; i < list.length; i++) {
+        let opt = document.createElement("option");
+        opt.innerHTML = list[i];
+        opt.value = list[i];
+        select.appendChild(opt);
+    }
+}
+
+function enableFields() {
+    let allFields = [ "stream-id", "new-id", "nickname", "race", "max-viewers" ];
+    for (let i = 0; i < allFields.length; i++) {
+        document.getElementById(allFields[i]).disabled = true;
+    }
+    let enabledFields = {
+        "add": [ "new-id", "nickname", "race" ],
+        "edit": [ "stream-id", "nickname", "race", "max-viewers" ],
+        "rename": [ "stream-id", "new-id" ],
+        "delete": [ "stream-id" ]
+    }
+    let operation = document.getElementById(opSelectId).value;
+    for (let i = 0; i < enabledFields[operation].length; i++) {
+        let element = document.getElementById(enabledFields[operation][i]);
+        element.disabled = false;
+    }
+}
+
+function modifyJson() {
+    let functionMap = {
+        "add": streamAdd,
+        "edit": streamEdit,
+        "rename": streamRename,
+        "delete": streamDelete
+    }
+    let operation = document.getElementById(opSelectId).value;
+    functionMap[operation]();
+}
+
+jsondiffpatch.formatters.html.hideUnchanged();
+document.getElementById(rightTextId).onkeyup = updateVisualDiff;
+document.getElementById(opSelectId).onchange = enableFields;
+enableFields();
+getData();
+
+</script>
+
+</body>
+</html>

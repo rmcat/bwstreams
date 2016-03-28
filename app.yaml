@@ -28,6 +28,10 @@ handlers:
 - url: /admin/.*
   script: src.app.app
   login: admin
+- url: /admin.html
+  static_files: static/admin.html
+  upload: static/admin.html
+  login: admin
 
 libraries:
 - name: webapp2
