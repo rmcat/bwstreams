@@ -171,19 +171,23 @@ let idMaxViewers = "max-viewers";
 let idVisualDiff = "visual";
 let idErrors = "errors";
 
-function streamAdd(json) {
+function setError(err) {
     let divError = document.getElementById(idErrors);
+    divError.innerHTML = err;
+}
+
+function streamAdd(json) {
     let newId = document.getElementById(idNewStreamId).value;
     let game = "brood war";
     let gameType = "afreeca";
     let key = gameType + "_" + newId;    
     if (newId === "" || json.hasOwnProperty(key)) {
-        divError.innerHTML = "Invalid key: " + key;
+        setError("Invalid key: " + key);
         return;
     }
     let nickname = document.getElementById(idNickname).value;
     if (nickname === "") {
-        divError.innerHTML = "Invslid nickname";
+        setError("Invslid nickname");
         return;
     }
     let race = document.getElementById(idRace).value;
@@ -192,7 +196,7 @@ function streamAdd(json) {
     }
     let maxViewers = parseInt(document.getElementById(idMaxViewers).value, 10);
     if (!isFinite(maxViewers) || maxViewers < 0) {
-        divError.innerHTML = "Invalid max viewers";
+        setError("Invalid max viewers");
         return;
     }
     json[key] = {
@@ -240,12 +244,12 @@ function updateVisualDiff() {
         var right = JSON.parse(document.getElementById(idTextRight).value);
     } catch (err) {
         document.getElementById(idVisualDiff).innerHTML = "";
-        document.getElementById(idErrors).innerHTML = err;
+        setError(err);
         return;
     }
 
     let delta = jsondiffpatch.diff(left, right);
-    document.getElementById(idErrors).innerHTML = "";
+    setError("");
     document.getElementById(idVisualDiff).innerHTML = jsondiffpatch.formatters.html.format(delta, left);
 }
 
