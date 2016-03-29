@@ -12,35 +12,56 @@ body {
 }
 
 .center {
+    text-align: center;
+}
+
+.panel-center {
     float: none;
     margin-top: 20px;
     margin-left: 20px;
     margin-right: 20px;
 }
 
+.spacer-sm {
+    height: 10px;
+    clear: both;
+}
+
+.spacer {
+    height: 10px;
+    clear: both;
+}
+
 .table-nonfluid {
-   width: auto !important;
+    width: auto !important;
 }
 
 .table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
     border: none;
+    margin: 0;
+    padding: 4px;
+    vertical-align: middle;
 }
 
 .json-panel {
     float: left;
     width: 50%;
+}
+
+.json-panel-inner {
+    width: 97%;
+    margin: 0 auto;
     text-align: center;
 }
 
-.json-input textarea {
-    width: 95%;
+.json-panel-inner textarea {
     height: 200px;
 }
 </style>
 </head>
 <body>
 
-<div class="panel panel-default panel center"><div class="panel-body">
+<div class="panel panel-default panel-center"><div class="panel-body">
 
 <div>
     <form>
@@ -48,7 +69,7 @@ body {
         <tr>
             <td>Operation</td>
             <td>
-                <select id="operation-type" class="form-control">
+                <select id="operation-type" class="form-control input-sm">
                     <option value="add">Add</option>
                     <option value="edit">Edit</option>
                     <option value="rename">Rename</option>
@@ -59,25 +80,25 @@ body {
         <tr>
             <td>ID</td>
             <td>
-                <select id="stream-id" class="form-control"></select>
+                <select id="stream-id" class="form-control input-sm"></select>
             </td>
         </tr>
         <tr>
             <td>New ID</td>
             <td>
-                <input id="new-id" class="form-control" value="">
+                <input id="new-id" class="form-control input-sm" value="">
             </td>
         </tr>
         <tr>
             <td>Nickname</td>
             <td>
-                 <input id="nickname" class="form-control" value="">
+                 <input id="nickname" class="form-control input-sm" value="">
             </td>
         </tr>
         <tr>
             <td>Race</td>
             <td>
-                 <select id="race" class="form-control">
+                 <select id="race" class="form-control input-sm">
                     <option value="None">None</option>
                     <option value="Protoss">Protoss</option>
                     <option value="Terran">Terran</option>
@@ -88,40 +109,48 @@ body {
         <tr>
             <td>Max Viewers</td>
             <td>
-                 <input id="max-viewers" class="form-control" value="">
+                 <input id="max-viewers" class="form-control input-sm" value="">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input class="btn btn-default btn-sm" type="reset" value="Clear">
             </td>
         </tr>
     </table>
-
-    <div style="margin-top: 10px">
-        <input class="btn btn-default" type="button" value="Modify JSON" onclick="modifyJson()">
-        <input class="btn btn-default" type="reset" value="Reset">
-        <input class="btn btn-default" type="button" value="Refresh" onclick="getData()">
-    </div>
     </form>
 </div>
 
 <form action="/admin/edit_database" method="post">
 <div>
     <div class="json-panel">
-        <label for="json-input-left"><h2>left.json</h2></label>
-        <div class="json-input">
+        <div class="json-panel-inner">
+            <label for="json-input-left"><h2>left.json</h2></label>
             <textarea id="json-input-left" class="form-control" readonly></textarea>
         </div>
     </div>
     <div class="json-panel">
-        <label for="json-input-right"><h2>right.json</h2></label>
-        <div class="json-input">
+        <div class="json-panel-inner">
+            <label for="json-input-right"><h2>right.json</h2></label>
             <textarea id="json-input-right" class="form-control" name="database"></textarea>
         </div>
     </div>
 </div>
 
-<div style="height: 10px; clear: both;"></div>
-<div id="syntax-errors"></div>
+<div class="spacer-sm"></div>
+<div class="center">
+    <input class="btn btn-default" type="button" value="Modify Left" onclick="modifyJsonLeftBase()">
+    <input class="btn btn-default" type="button" value="Reset" onclick="getData()">
+    <input class="btn btn-default" type="button" value="Modify Right" onclick="modifyJsonRightBase()">
+</div>
+
+<div class="spacer"></div>
+<div id="errors"></div>
 <div id="visual"></div>
-<div style="height: 10px; clear: both;"></div>
-<div><input class="btn btn-default" type="submit" value="Edit Database"></div>
+
+<div class="spacer"></div>
+<div class="center"><input class="btn btn-default" type="submit" value="Edit Database"></div>
 </form>
 
 </div></div>
@@ -140,11 +169,10 @@ let idNickname = "nickname";
 let idRace = "race";
 let idMaxViewers = "max-viewers";
 let idVisualDiff = "visual";
-let idErrors = "syntax-errors";
+let idErrors = "errors";
 
-function streamAdd() {
+function streamAdd(json) {
     let divError = document.getElementById(idErrors);
-    let json = JSON.parse(document.getElementById(idTextLeft).value);
     let newId = document.getElementById(idNewStreamId).value;
     let game = "brood war";
     let gameType = "afreeca";
@@ -183,16 +211,15 @@ function streamAdd() {
     postOperation(json);
 }
 
-function streamEdit() {
+function streamEdit(json) {
     alert("streamEdit()");
 }
 
-function streamRename() {
+function streamRename(json) {
     alert("streamRename()");
 }
 
-function streamDelete() {
-    let json = JSON.parse(document.getElementById(idTextLeft).value);
+function streamDelete(json) {
     let deleteId = document.getElementById(idSelectStreamId).value;
     if (!deleteId) {
         return;
@@ -282,7 +309,17 @@ function enableFields() {
     }
 }
 
-function modifyJson() {
+function modifyJsonLeftBase() {
+    let json = JSON.parse(document.getElementById(idTextLeft).value);
+    modifyJson(json);
+}
+
+function modifyJsonRightBase() {
+    let json = JSON.parse(document.getElementById(idTextRight).value);
+    modifyJson(json);
+}
+
+function modifyJson(json) {
     let functionMap = {
         "add": streamAdd,
         "edit": streamEdit,
@@ -290,7 +327,7 @@ function modifyJson() {
         "delete": streamDelete
     }
     let operation = document.getElementById(idSelectOperation).value;
-    functionMap[operation]();
+    functionMap[operation](json);
 }
 
 jsondiffpatch.formatters.html.hideUnchanged();
