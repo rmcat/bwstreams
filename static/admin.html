@@ -190,8 +190,8 @@ function streamAdd(json) {
         setError("Invslid nickname");
         return;
     }
-    let race = document.getElementById(idRace).value;
-    if (race === "None") {
+    let race = document.getElementById(idRace).value.toLowerCase();
+    if (race === "none") {
         race = "";
     }
     let maxViewers = parseInt(document.getElementById(idMaxViewers).value, 10);
@@ -216,7 +216,29 @@ function streamAdd(json) {
 }
 
 function streamEdit(json) {
-    alert("streamEdit()");
+    let key = document.getElementById(idSelectStreamId).value;
+    if (key === "" || !json.hasOwnProperty(key)) {
+        setError("Invalid key: " + key);
+        return;
+    }
+    let nickname = document.getElementById(idNickname).value;
+    if (nickname === "") {
+        setError("Invalid nickname");
+        return;
+    }
+    let race = document.getElementById(idRace).value.toLowerCase();
+    if (race === "none") {
+        race = "";
+    }
+    let maxViewers = parseInt(document.getElementById(idMaxViewers).value, 10);
+    if (!isFinite(maxViewers) || maxViewers < 0) {
+        setError("Invalid max viewers");
+        return;
+    }
+    json[key]["nickname"] = nickname;
+    json[key]["game_info"]["race"] = race;
+    json[key]["max_viewers"] = maxViewers;
+    postOperation(json);
 }
 
 function streamRename(json) {
