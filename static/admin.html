@@ -131,15 +131,56 @@ body {
 <script type="text/javascript" src="js/jsondiffpatch/jsondiffpatch-formatters.min.js"></script>
 <script>
 "use strict";
-let leftTextId = "json-input-left";
-let rightTextId = "json-input-right";
-let opSelectId = "operation-type";
-let streamSelectId = "stream-id";
-let visualDiffId = "visual";
-let syntaxErrorsId = "syntax-errors";
+let idTextLeft = "json-input-left";
+let idTextRight = "json-input-right";
+let idSelectOperation = "operation-type";
+let idSelectStreamId = "stream-id";
+let idNewStreamId = "new-id";
+let idNickname = "nickname";
+let idRace = "race";
+let idMaxViewers = "max-viewers";
+let idVisualDiff = "visual";
+let idErrors = "syntax-errors";
 
 function streamAdd() {
-    alert("streamAdd()");
+    let divError = document.getElementById(idErrors);
+    let json = JSON.parse(document.getElementById(idTextLeft).value);
+    let newId = document.getElementById(idNewStreamId).value;
+    let game = "brood war";
+    let gameType = "afreeca";
+    let key = gameType + "_" + newId;    
+    if (newId === "" || json.hasOwnProperty(key)) {
+        divError.innerHTML = "Invalid key: " + key;
+        return;
+    }
+    let nickname = document.getElementById(idNickname).value;
+    if (nickname === "") {
+        divError.innerHTML = "Invslid nickname";
+        return;
+    }
+    let race = document.getElementById(idRace).value;
+    if (race === "None") {
+        race = "";
+    }
+    let maxViewers = parseInt(document.getElementById(idMaxViewers).value, 10);
+    if (!isFinite(maxViewers) || maxViewers < 0) {
+        divError.innerHTML = "Invalid max viewers";
+        return;
+    }
+    json[key] = {
+      "game": game,
+      "game_info": {
+        "race": race
+      },
+      "id": newId,
+      "last_seen": null,
+      "max_viewers": maxViewers,
+      "nickname": nickname,
+      "online_since": null,
+      "type": gameType,
+      "viewers": 0
+    }
+    postOperation(json);
 }
 
 function streamEdit() {
@@ -151,8 +192,8 @@ function streamRename() {
 }
 
 function streamDelete() {
-    let json = JSON.parse(document.getElementById(leftTextId).value);
-    let deleteId = document.getElementById(streamSelectId).value;
+    let json = JSON.parse(document.getElementById(idTextLeft).value);
+    let deleteId = document.getElementById(idSelectStreamId).value;
     if (!deleteId) {
         return;
     }
@@ -168,17 +209,17 @@ function streamDelete() {
 
 function updateVisualDiff() {
     try {
-        var left = JSON.parse(document.getElementById(leftTextId).value);
-        var right = JSON.parse(document.getElementById(rightTextId).value);
+        var left = JSON.parse(document.getElementById(idTextLeft).value);
+        var right = JSON.parse(document.getElementById(idTextRight).value);
     } catch (err) {
-        document.getElementById(visualDiffId).innerHTML = "";
-        document.getElementById(syntaxErrorsId).innerHTML = err;
+        document.getElementById(idVisualDiff).innerHTML = "";
+        document.getElementById(idErrors).innerHTML = err;
         return;
     }
 
     let delta = jsondiffpatch.diff(left, right);
-    document.getElementById(syntaxErrorsId).innerHTML = "";
-    document.getElementById(visualDiffId).innerHTML = jsondiffpatch.formatters.html.format(delta, left);
+    document.getElementById(idErrors).innerHTML = "";
+    document.getElementById(idVisualDiff).innerHTML = jsondiffpatch.formatters.html.format(delta, left);
 }
 
 function updateTextArea(textAreaId, json) {
@@ -186,7 +227,7 @@ function updateTextArea(textAreaId, json) {
 }
 
 function postOperation(json) {
-    updateTextArea(rightTextId, json);
+    updateTextArea(idTextRight, json);
     updateVisualDiff();
 }
 
@@ -196,8 +237,8 @@ function getData() {
             return;
         }
         let streams = json["streams"];
-        updateTextArea(leftTextId, streams);
-        updateTextArea(rightTextId, streams);
+        updateTextArea(idTextLeft, streams);
+        updateTextArea(idTextRight, streams);
 
         let streamIds = [ "" ];
         for (let key in streams) {
@@ -206,11 +247,12 @@ function getData() {
             }
         }
         updateStreamIds(streamIds);
+        updateVisualDiff();
     });
 }
 
 function updateStreamIds(list) {
-    let select = document.getElementById(streamSelectId);
+    let select = document.getElementById(idSelectStreamId);
     for (let i = select.options.length - 1; i >= 0; i--) {
         select.remove(i);
     }
@@ -228,12 +270,12 @@ function enableFields() {
         document.getElementById(allFields[i]).disabled = true;
     }
     let enabledFields = {
-        "add": [ "new-id", "nickname", "race" ],
+        "add": [ "new-id", "nickname", "race", "max-viewers" ],
         "edit": [ "stream-id", "nickname", "race", "max-viewers" ],
         "rename": [ "stream-id", "new-id" ],
         "delete": [ "stream-id" ]
     }
-    let operation = document.getElementById(opSelectId).value;
+    let operation = document.getElementById(idSelectOperation).value;
     for (let i = 0; i < enabledFields[operation].length; i++) {
         let element = document.getElementById(enabledFields[operation][i]);
         element.disabled = false;
@@ -247,13 +289,13 @@ function modifyJson() {
         "rename": streamRename,
         "delete": streamDelete
     }
-    let operation = document.getElementById(opSelectId).value;
+    let operation = document.getElementById(idSelectOperation).value;
     functionMap[operation]();
 }
 
 jsondiffpatch.formatters.html.hideUnchanged();
-document.getElementById(rightTextId).onkeyup = updateVisualDiff;
-document.getElementById(opSelectId).onchange = enableFields;
+document.getElementById(idTextRight).onkeyup = updateVisualDiff;
+document.getElementById(idSelectOperation).onchange = enableFields;
 enableFields();
 getData();
 
