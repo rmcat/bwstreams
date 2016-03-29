@@ -242,7 +242,22 @@ function streamEdit(json) {
 }
 
 function streamRename(json) {
-    alert("streamRename()");
+    let key = document.getElementById(idSelectStreamId).value;
+    if (key === "" || !json.hasOwnProperty(key)) {
+        setError("Invalid key: " + key);
+        return;
+    }
+    let newId = document.getElementById(idNewStreamId).value;
+    let gameType = "afreeca";
+    let newKey = gameType + "_" + newId;
+    if (newKey === key || json.hasOwnProperty(newKey)) {
+        setError("Invalid key: " + newKey);
+        return;
+    }
+    json[newKey] = json[key];
+    delete json[key];
+    json[newKey]["id"] = newId;
+    postOperation(json);
 }
 
 function streamDelete(json) {
