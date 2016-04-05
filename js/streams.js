@@ -1,5 +1,12 @@
 "use strict";
 
+var visibilities = {
+    "checkbox-show-offline": "stream-row-offline",
+    "checkbox-show-race": "stream-col-race",
+    "checkbox-show-high": "stream-col-high",
+    "checkbox-show-last-seen": "stream-col-last-seen",
+};
+
 function getLastSeenStatus(isOnline, lastSeen) {
     if (isOnline) {
         return "now";
@@ -43,16 +50,16 @@ function replaceTable(streams, updateTime) {
             var url = "http://play.afreeca.com/" + stream["id"] + "/embed";
 
             var cells = [
-                [nickname, { } ],
-                [raceText, { "class": [ "text-capitalize", "hidden-xs" ] } ],
-                [viewers, { "class": [ "text-right" ] } ],
-                [maxViewers, { "class": [ "text-right" ] } ],
-                [durationText, { "class": [ "text-center" ], "data-value": durationValue } ],
-                [lastSeenText, { "class": [ "text-center" ], "data-value": lastSeenValue } ],
+                [nickname,     { "class": [ "stream-col-nickname" ] } ],
+                [raceText,     { "class": [ "stream-col-race", "text-capitalize" ] } ],
+                [viewers,      { "class": [ "stream-col-viewers", "text-center" ] } ],
+                [maxViewers,   { "class": [ "stream-col-high", "text-center" ] } ],
+                [durationText, { "class": [ "stream-col-duration", "text-center" ], "data-value": durationValue } ],
+                [lastSeenText, { "class": [ "stream-col-last-seen", "text-center" ], "data-value": lastSeenValue } ],
             ];
 
             var newRow = newTbody.insertRow(-1);
-            newRow.classList.add(isOnline ? "online" : "offline");
+            newRow.classList.add(isOnline ? "stream-row-online" : "stream-row-offline");
             newRow.classList.add("race-" + (race || "none"));
             for (var i = 0; i < cells.length; i++) {
                 var text = cells[i][0];
@@ -92,11 +99,11 @@ function replaceTable(streams, updateTime) {
     table.replaceChild(newTbody, oldTbody);
 }
 
-function updateOfflineVisibility() {
-    if ($("#checkbox-show-offline").is(":checked")) {
-        $(".offline").show();
+function updateVisibility(checkboxId, className) {
+    if ($("#" + checkboxId).is(":checked")) {
+        $("." + className).show();
     } else {
-        $(".offline").hide();
+        $("." + className).hide();
     }
 }
 
@@ -126,7 +133,11 @@ var updater = {
         replaceTable(this.json["streams"], this.json["last_update"]);
         setLastUpdate(this.json["last_update"]);
         $.bootstrapSortable(true);
-        updateOfflineVisibility();
+        for (var checkboxId in visibilities) {
+            if (visibilities.hasOwnProperty(checkboxId)) {
+                updateVisibility(checkboxId, visibilities[checkboxId]);
+            }
+        }
         $("#btn-refresh").removeClass("fa-spin");
         $("#btn-refresh").removeClass("active");
     }
@@ -174,9 +185,17 @@ jQuery(document).ready(function($) {
         updater.refreshStreams();
     });
 
-    $("#checkbox-show-offline").click(function() {
-        updateOfflineVisibility();
-    });
+    for (var checkboxId in visibilities) {
+        (function() {
+            var key = checkboxId;
+            var value = visibilities[key];
+            if (visibilities.hasOwnProperty(key)) {
+                $("#" + key).click(function() {
+                    updateVisibility(key, value);
+                });
+            }
+        })();
+    }
 
     $("#checkbox-autorefresh").click(function() {
         timer.updateTimerStatus();

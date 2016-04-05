@@ -16,8 +16,12 @@ body {
   background-color: #fff !important;
 }
 
-.table tbody tr.offline {
+.table tbody tr.stream-row-offline {
   opacity: 0.5;
+}
+
+.table tbody tr td.stream-row-viewers {
+  padding-right: 50px;
 }
 
 .race-none span {
