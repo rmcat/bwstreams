@@ -3,6 +3,7 @@
 var visibilities = {
     "checkbox-show-offline": "stream-row-offline",
     "checkbox-show-race": "stream-col-race",
+    "checkbox-show-viewers": "stream-col-viewers",
     "checkbox-show-high": "stream-col-high",
     "checkbox-show-last-seen": "stream-col-last-seen",
 };
