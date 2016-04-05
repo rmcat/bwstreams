@@ -10,7 +10,7 @@ function getLastSeenStatus(isOnline, lastSeen) {
     }
 }
 
-function replaceTable(streams) {
+function replaceTable(streams, updateTime) {
     var idTableStreams = "streams";
     var newTbody = document.createElement("tbody");
 
@@ -31,6 +31,13 @@ function replaceTable(streams) {
             var viewers = stream["viewers"];
             var maxViewers = stream["max_viewers"];
             var isOnline = stream["online_since"] !== null;
+            var durationText = "not online";
+            var durationValue = 0;
+            if (stream["online_since"] !== null) {
+                var duration = moment.duration(moment(updateTime).diff(moment(stream["online_since"])));
+                durationText = duration.humanize();
+                durationValue = duration.asMinutes();
+            }
             var lastSeenText = getLastSeenStatus(isOnline, stream["last_seen"]);
             var lastSeenValue = stream["last_seen"] || 0;
             var url = "http://play.afreeca.com/" + stream["id"] + "/embed";
@@ -40,6 +47,7 @@ function replaceTable(streams) {
                 [raceText, { "class": [ "text-capitalize", "hidden-xs" ] } ],
                 [viewers, { "class": [ "text-right" ] } ],
                 [maxViewers, { "class": [ "text-right" ] } ],
+                [durationText, { "class": [ "text-center" ], "data-value": durationValue } ],
                 [lastSeenText, { "class": [ "text-center" ], "data-value": lastSeenValue } ],
             ];
 
@@ -115,8 +123,8 @@ var updater = {
     },
 
     refreshComplete: function() {
-        replaceTable(this.json.streams);
-        setLastUpdate(this.json.last_update);
+        replaceTable(this.json["streams"], this.json["last_update"]);
+        setLastUpdate(this.json["last_update"]);
         $.bootstrapSortable(true);
         updateOfflineVisibility();
         $("#btn-refresh").removeClass("fa-spin");
