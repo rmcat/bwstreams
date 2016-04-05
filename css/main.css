@@ -3,17 +3,24 @@ body {
 }
 
 .table tbody tr td, .table thead tr th {
-  padding: 5px;
+  padding-top: 4px;
+  padding-bottom: 4px;
   border: 0px;
 }
 
 .table thead tr th {
   font-weight: 500;
-  background-color: #f4f4f4;
+  background-color: #444;
+  color: #ddd;
 }
 
 .table-hover thead tr th:hover {
-  background-color: #fff !important;
+  background-color: #ddd !important;
+  color: #444;
+}
+
+.table tbody td a, .table tbody td a:visited {
+  color: black;
 }
 
 .table tbody tr.stream-row-offline {
@@ -29,11 +36,11 @@ body {
 }
 
 .race-terran span {
-  color: #0bf;
+  color: #08f;
 }
 
 .race-protoss span {
-  color: #2c2;
+  color: #2e0;
 }
 
 .race-zerg span {
