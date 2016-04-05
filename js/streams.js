@@ -27,7 +27,7 @@ function replaceTable(streams) {
 
             var nickname = stream["nickname"];
             var race = stream["game_info"]["race"];
-            var raceText = race ? race : "\u2000"; // workaround for no td link
+            var raceText = race ? race : "";
             var viewers = stream["viewers"];
             var maxViewers = stream["max_viewers"];
             var isOnline = stream["online_since"] !== null;
@@ -36,7 +36,7 @@ function replaceTable(streams) {
             var url = "http://play.afreeca.com/" + stream["id"] + "/embed";
 
             var cells = [
-                [nickname, { "class": [ "race-" + (race || "none") ] }],
+                [nickname, { } ],
                 [raceText, { "class": [ "text-capitalize", "hidden-xs" ] } ],
                 [viewers, { "class": [ "text-right" ] } ],
                 [maxViewers, { "class": [ "text-right" ] } ],
@@ -50,7 +50,6 @@ function replaceTable(streams) {
                 var text = cells[i][0];
                 var data = cells[i][1];
                 var newCell = newRow.insertCell(-1);
-                var linkText = document.createTextNode(text);
                 if (data !== null) {
                     for (var key in data) {
                         if (data.hasOwnProperty(key)) {
@@ -64,11 +63,18 @@ function replaceTable(streams) {
                         }
                     }
                 }
-                var a = document.createElement("a");
-                a.href = url;
-                a.rel = "noreferrer";
-                a.appendChild(linkText);
-                newCell.appendChild(a);
+                if (i == 0) {
+                    var span = document.createElement("span");
+                    span.innerHTML = "◆ ";
+                    newCell.appendChild(span);
+                    var a = document.createElement("a");
+                    a.href = url;
+                    a.rel = "noreferrer";
+                    a.appendChild(document.createTextNode(text));
+                    newCell.appendChild(a);
+                } else {
+                    newCell.appendChild(document.createTextNode(text));
+                }
             }
         }
     }

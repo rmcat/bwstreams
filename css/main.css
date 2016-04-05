@@ -2,28 +2,50 @@ body {
   font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
 }
 
-.table tbody td a, .table tbody td a:visited {
-  display: inline-block;
-  height: 100%;
-  width: 100%;
-  color: black;
-  text-decoration: none;
+.table tbody tr td, .table thead tr th {
+  padding: 5px;
+  border: 0px;
+}
+
+.table thead tr th {
+  font-weight: 500;
+  background-color: #f4f4f4;
+}
+
+.table-hover thead tr th:hover {
+  background-color: #fff !important;
 }
 
 .table tbody tr.offline {
   opacity: 0.5;
 }
 
+.race-none span {
+  color: #ddd;
+}
+
+.race-terran span {
+  color: #0bf;
+}
+
+.race-protoss span {
+  color: #2c2;
+}
+
+.race-zerg span {
+  color: #f66;
+}
+
 .table-hover tbody tr.race-protoss:hover td {
-  background-color: rgba(225,255,225,1);
+  background-color: rgb(225,255,225);
 }
 
 .table-hover tbody tr.race-terran:hover td {
-  background-color: rgba(223,238,255,1);
+  background-color: rgb(223,238,255);
 }
 
 .table-hover tbody tr.race-zerg:hover td {
-  background-color: rgba(255,238,238,1);
+  background-color: rgb(255,238,238);
 }
 
 @media only screen and (min-width: 769px) {
