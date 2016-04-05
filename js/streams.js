@@ -9,9 +9,9 @@ var visibilities = {
 
 function getLastSeenStatus(isOnline, lastSeen) {
     if (isOnline) {
-        return "now";
+        return "online";
     } else if (lastSeen === null) {
-        return "never";
+        return "never seen";
     } else {
         return moment(lastSeen).fromNow();
     }
@@ -38,7 +38,7 @@ function replaceTable(streams, updateTime) {
             var viewers = stream["viewers"];
             var maxViewers = stream["max_viewers"];
             var isOnline = stream["online_since"] !== null;
-            var durationText = "not online";
+            var durationText = "offline";
             var durationValue = 0;
             if (stream["online_since"] !== null) {
                 var duration = moment.duration(moment(updateTime).diff(moment(stream["online_since"])));
