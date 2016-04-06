@@ -25,7 +25,6 @@ var settings = {
             console.log("localStorage not supported");
             return;
         }
-        console.log("Loading settings from localStorage");
         for (var setting in this) {
             if (!this.hasOwnProperty(setting) || typeof(this[setting]) != "boolean") {
                 continue;
@@ -43,7 +42,6 @@ var settings = {
             console.log("localStorage not supported");
             return;
         }
-        console.log("Saving settings to localStorage");
         for (var setting in this) {
             if (!this.hasOwnProperty(setting) || typeof(this[setting]) != "boolean") {
                 continue;
@@ -231,12 +229,11 @@ var updater = {
 }
 
 var timer = {
-    timerDuration: 10,
+    timerDuration: 60,
     timerElapsed: 0,
     timerId: null,
 
     updateTimerStatus: function() {
-
         if (settings.autoRefresh && this.timerId == null) {
             this.startTimer();
         }
@@ -278,7 +275,6 @@ jQuery(document).ready(function($) {
             var setting = s;
             var checkboxId = settings.settingToCheckboxId(setting);
             $("#" + checkboxId).click(function() {
-                console.log("Clicked... settings[" + setting + "] = " + settings[setting])
                 settings[setting] = $("#" + checkboxId).is(":checked");
                 settings.callback(setting);
             });
