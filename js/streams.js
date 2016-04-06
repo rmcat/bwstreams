@@ -1,5 +1,63 @@
 "use strict";
 
+var supportsLocalStorage = typeof(Storage) !== "undefined";
+var settings = {
+    showOffline: false,
+    showRace: false,
+    showViewers: true,
+    showHigh: false,
+    showDuration: true,
+    showLastSeen: true,
+    autoRefresh: true,
+    resetSettings: function() {
+        this.showOffline = false;
+        this.showRace = false;
+        this.showViewers = true;
+        this.showHigh = false;
+        this.showDuration: true,
+        this.showLastSeen = true;
+        this.autoRefresh = true;
+    },
+    loadSettings: function() {
+        if (!supportsLocalStorage) {
+            console.log("localStorage not supported");
+            return;
+        }
+        console.log("Loading settings from localStorage");
+        for (var setting in this) {
+            if (!this.hasOwnProperty(setting) || typeof(this[setting]) != "boolean") {
+                continue;
+            }
+            if (!localStorage.hasOwnProperty(setting)) {
+                continue;
+            }
+            this[setting] = localStorage[setting] === "true";
+            console.log(setting + ": " + this[setting]);
+        }
+    },
+    saveSettings: function() {
+        if (!supportsLocalStorage) {
+            console.log("localStorage not supported");
+            return;
+        }
+        console.log("Saving settings to localStorage");
+        for (var setting in this) {
+            if (!this.hasOwnProperty(setting) || typeof(this[setting]) != "boolean") {
+                continue;
+            }
+            localStorage[setting] = Boolean(this[setting]);
+            console.log(setting + ": " + localStorage[setting]);
+        }
+    },
+    printSettings: function() {
+        for (var setting in this) {
+            if (this.hasOwnProperty(setting) && typeof(this[setting]) == "boolean") {
+                console.log(setting + ": " + this[setting]);
+            }
+        }
+    }
+}
+
 var visibilities = {
     "checkbox-show-offline": "stream-row-offline",
     "checkbox-show-race": "stream-col-race",
@@ -180,8 +238,7 @@ var timer = {
 }
 
 jQuery(document).ready(function($) {
-    updater.refreshStreams();
-    timer.updateTimerStatus();
+    settings.loadSettings();
 
     $("#btn-refresh").click(function() {
         updater.refreshStreams();
@@ -202,4 +259,7 @@ jQuery(document).ready(function($) {
     $("#checkbox-autorefresh").click(function() {
         timer.updateTimerStatus();
     });
+
+    updater.refreshStreams();
+    timer.updateTimerStatus();
 });
