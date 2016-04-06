@@ -15,7 +15,7 @@ var settings = {
         this.showRace = false;
         this.showViewers = true;
         this.showHigh = false;
-        this.showDuration: true,
+        this.showDuration = true;
         this.showLastSeen = true;
         this.autoRefresh = true;
     },
