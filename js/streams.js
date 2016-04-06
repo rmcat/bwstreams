@@ -5,6 +5,7 @@ var visibilities = {
     "checkbox-show-race": "stream-col-race",
     "checkbox-show-viewers": "stream-col-viewers",
     "checkbox-show-high": "stream-col-high",
+    "checkbox-show-duration": "stream-col-duration",
     "checkbox-show-last-seen": "stream-col-last-seen",
 };
 
