@@ -9,6 +9,7 @@ var settings = {
     showDuration: true,
     showLastSeen: true,
     autoRefresh: true,
+
     resetSettings: function() {
         this.showOffline = false;
         this.showRace = false;
@@ -18,6 +19,7 @@ var settings = {
         this.showLastSeen = true;
         this.autoRefresh = true;
     },
+
     loadSettings: function() {
         if (!supportsLocalStorage) {
             console.log("localStorage not supported");
@@ -35,6 +37,7 @@ var settings = {
             console.log(setting + ": " + this[setting]);
         }
     },
+
     saveSettings: function() {
         if (!supportsLocalStorage) {
             console.log("localStorage not supported");
@@ -49,23 +52,54 @@ var settings = {
             console.log(setting + ": " + localStorage[setting]);
         }
     },
+
     printSettings: function() {
         for (var setting in this) {
             if (this.hasOwnProperty(setting) && typeof(this[setting]) == "boolean") {
                 console.log(setting + ": " + this[setting]);
             }
         }
+    },
+
+    settingToCheckboxId: function(s) {
+        return "checkbox-" + s.replace(/([A-Z])/g, function (x, y){return "-" + y.toLowerCase()}).replace(/^-/, "");
+    },
+    
+    callback: function(setting) {
+        var className;
+        switch (setting) {
+            case "autoRefresh":
+                timer.updateTimerStatus();
+                return;
+            case "showOffline":
+                className = "stream-row-offline";
+                break;
+            case "showRace":
+                className = "stream-col-race";
+                break;
+            case "showViewers":
+                className = "stream-col-viewers";
+                break;
+            case "showHigh":
+                className = "stream-col-high";
+                break;
+            case "showDuration":
+                className = "stream-col-duration";
+                break;
+            case "showLastSeen":
+                className = "stream-col-last-seen";
+                break;
+            default:
+                throw "Unknown value in switch statement: " + setting;
+        }
+        if (this[setting]) {
+            $("." + className).show();
+        } else {
+            $("." + className).hide();
+        }
     }
 }
 
-var visibilities = {
-    "checkbox-show-offline": "stream-row-offline",
-    "checkbox-show-race": "stream-col-race",
-    "checkbox-show-viewers": "stream-col-viewers",
-    "checkbox-show-high": "stream-col-high",
-    "checkbox-show-duration": "stream-col-duration",
-    "checkbox-show-last-seen": "stream-col-last-seen",
-};
 
 function getLastSeenStatus(isOnline, lastSeen) {
     if (isOnline) {
@@ -159,14 +193,6 @@ function replaceTable(streams, updateTime) {
     table.replaceChild(newTbody, oldTbody);
 }
 
-function updateVisibility(checkboxId, className) {
-    if ($("#" + checkboxId).is(":checked")) {
-        $("." + className).show();
-    } else {
-        $("." + className).hide();
-    }
-}
-
 function setLastUpdate(timeStr) {
     $("#text-last-updated").text(moment(timeStr).format("lll"));
 }
@@ -193,10 +219,11 @@ var updater = {
         replaceTable(this.json["streams"], this.json["last_update"]);
         setLastUpdate(this.json["last_update"]);
         $.bootstrapSortable(true);
-        for (var checkboxId in visibilities) {
-            if (visibilities.hasOwnProperty(checkboxId)) {
-                updateVisibility(checkboxId, visibilities[checkboxId]);
+        for (var s in settings) {
+            if (s.substring(0, 4) !== "show" || !settings.hasOwnProperty(s) || typeof(settings[s]) != "boolean") {
+                continue;
             }
+            settings.callback(s);
         }
         $("#btn-refresh").removeClass("fa-spin");
         $("#btn-refresh").removeClass("active");
@@ -204,14 +231,13 @@ var updater = {
 }
 
 var timer = {
-    timerEnabled: false,
-    timerDuration: 60,
+    timerDuration: 10,
     timerElapsed: 0,
     timerId: null,
 
     updateTimerStatus: function() {
-        this.timerEnabled = $("#checkbox-autorefresh").is(":checked");
-        if (this.timerEnabled && this.timerId == null) {
+
+        if (settings.autoRefresh && this.timerId == null) {
             this.startTimer();
         }
     },
@@ -230,7 +256,7 @@ var timer = {
     startTimer: function() {
         this.timerId = setInterval((function() {
             ++this.timerElapsed;
-            if (this.timerEnabled && this.timerElapsed >= this.timerDuration) {
+            if (settings.autoRefresh && this.timerElapsed >= this.timerDuration) {
                 updater.refreshStreams();
             }
         }).bind(this), 1000);
@@ -244,22 +270,26 @@ jQuery(document).ready(function($) {
         updater.refreshStreams();
     });
 
-    for (var checkboxId in visibilities) {
+    for (var s in settings) {
+        if (s.substring(0, 4) !== "show" || !settings.hasOwnProperty(s) || typeof(settings[s]) != "boolean") {
+            continue;
+        }
         (function() {
-            var key = checkboxId;
-            var value = visibilities[key];
-            if (visibilities.hasOwnProperty(key)) {
-                $("#" + key).click(function() {
-                    updateVisibility(key, value);
-                });
-            }
+            var setting = s;
+            var checkboxId = settings.settingToCheckboxId(setting);
+            $("#" + checkboxId).click(function() {
+                console.log("Clicked... settings[" + setting + "] = " + settings[setting])
+                settings[setting] = $("#" + checkboxId).is(":checked");
+                settings.callback(setting);
+            });
         })();
     }
 
-    $("#checkbox-autorefresh").click(function() {
-        timer.updateTimerStatus();
+    $("#checkbox-auto-refresh").click(function() {
+        settings["autoRefresh"] = $("#checkbox-auto-refresh").is(":checked");
+        settings.callback("autoRefresh");
     });
 
     updater.refreshStreams();
-    timer.updateTimerStatus();
+    settings.callback("autoRefresh");
 });
