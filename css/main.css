@@ -32,15 +32,15 @@ body {
 }
 
 .race-terran span {
-  color: #08f;
+  color: #4af;
 }
 
 .race-protoss span {
-  color: #2e0;
+  color: #2b2;
 }
 
 .race-zerg span {
-  color: #f66;
+  color: #f77;
 }
 
 .table-hover tbody tr.race-protoss:hover td {
