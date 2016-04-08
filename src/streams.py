@@ -47,11 +47,13 @@ def format_afreeca_response_to_json(data):
     data = re.sub(r'[^\x00-\x7F]+', '', data)
     pattern = '{[^}]*?' \
               '("user_id"[^,]+),[^}]*?' \
+              '("is_password"[^,]+),.*?' \
               '("broad_start"[^,]+),.*?' \
+              '("broad_img"[^,]+),.*?' \
               '("total_view_cnt"[^,]+),[^}]*?' \
               '}'
-    repl = '\n{ \\1, \\2, \\3 }'
-    data = re.sub(pattern, repl, data, flags=re.DOTALL)
+    replace = '\n{ \\1, \\2, \\3, \\4, \\5 }'
+    data = re.sub(pattern, replace, data, flags=re.DOTALL)
     return data
 
 
@@ -62,14 +64,18 @@ def get_current_streams():
     # afreeca_url = 'http://localhost:8000/broad_list_api.php'
     afreeca_response = utils.fetch_url(afreeca_url)
     afreeca_json_str = format_afreeca_response_to_json(afreeca_response)
+
     json_object = json.loads(afreeca_json_str)
     time_format = '%Y-%m-%d %H:%M'
     time_offset = 9
     for info in json_object['CHANNEL']['REAL_BROAD']:
         id = info['user_id']
         viewers = int(info['total_view_cnt'])
+        locked = info['is_password'] == 'Y'
         online_since = utils.get_utc_time(info['broad_start'], time_format, time_offset)
-        stream = {'type': 'afreeca', 'id': id, 'viewers': viewers, 'online_since': online_since}
+        image = info['broad_img']
+        stream = {'type': 'afreeca', 'id': id, 'viewers': viewers, 'online_since': online_since,
+                  'image': image, 'locked': locked}
         streams.append(stream)
     return streams
 
@@ -85,20 +91,22 @@ def update_database(db, streams):
         db_stream = db[key]
         db_stream['online_since'] = None
         db_stream['viewers'] = 0
+        db_stream['image'] = ''
 
     for stream in streams:
+        if stream['locked']:
+            continue
         key = database_key(stream['type'], stream['id'])
         if key not in db:
             continue
         db_stream = db[key]
-        online_since, viewers = stream['online_since'], stream['viewers']
         db_stream['last_seen'] = time
-        db_stream['online_since'] = online_since
-        db_stream['viewers'] = viewers
-        stream_type, id, nickname = db_stream['type'], db_stream['id'], db_stream['nickname']
-        logger.info('{} ({}:{}:{})'.format(nickname, stream_type, id, viewers))
-        if viewers > db_stream['max_viewers']:
-            db_stream['max_viewers'] = viewers
+        db_stream['online_since'] = stream['online_since']
+        db_stream['image'] = stream['image']
+        db_stream['viewers'] = stream['viewers']
+        if db_stream['viewers'] > db_stream['max_viewers']:
+            db_stream['max_viewers'] = db_stream['viewers']
+        logger.info('{} ({})'.format(key, db_stream['viewers']))
 
     return db
 
