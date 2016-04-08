@@ -18,16 +18,6 @@ var settings = {
         return this.keys().filter(s => s.substring(0, 4) === "show");
     }),
 
-    resetSettings: function() {
-        this.showOffline = false;
-        this.showRace = false;
-        this.showViewers = true;
-        this.showHigh = false;
-        this.showDuration = true;
-        this.showLastSeen = true;
-        this.autoRefresh = true;
-    },
-
     loadSettings: function() {
         console.log("loadSettings");
         var settingKeys = this.keys();
@@ -58,14 +48,6 @@ var settings = {
             var setting = settingKeys[i];
             localStorage[setting] = Boolean(this[setting]);
             console.log(setting + ": " + localStorage[setting]);
-        }
-    },
-
-    printSettings: function() {
-        for (var setting in this) {
-            if (this.hasOwnProperty(setting) && typeof(this[setting]) == "boolean") {
-                console.log(setting + ": " + this[setting]);
-            }
         }
     },
 
