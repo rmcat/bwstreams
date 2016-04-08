@@ -263,6 +263,10 @@ var timer = {
 jQuery(document).ready(function($) {
     settings.loadSettings();
 
+    watch(settings, ["showOffline", "showRace", "showViewers", "showHigh", "showDuration", "showLastSeen", "autoRefresh"], function(){
+        settings.saveSettings();
+    });
+
     $("#btn-refresh").click(function() {
         updater.refreshStreams();
     });
