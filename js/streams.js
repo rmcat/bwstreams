@@ -19,7 +19,7 @@ var settings = {
     }),
 
     loadSettings: function() {
-        console.log("loadSettings");
+        //console.log("loadSettings");
         var settingKeys = this.keys();
         for (var i = 0; i < settingKeys.length; i++) {
             var setting = settingKeys[i];
@@ -28,18 +28,18 @@ var settings = {
             }
             var checkboxId = this.settingToCheckboxId(setting);
             var element = $("#" + checkboxId);
-            console.log(setting + ": " + localStorage[setting]);
+            //console.log(setting + ": " + localStorage[setting]);
             if (element.length && element.is(":checked") !== this[setting])
             {
                 element.click();
-                console.log("Fired click event");
+                //console.log("Fired click event");
             }
         }
     },
 
     saveSettings: function() {
         if (!supportsLocalStorage) {
-            console.log("localStorage not supported");
+            //console.log("localStorage not supported");
             return;
         }
         console.log("saveSettings");
@@ -47,7 +47,7 @@ var settings = {
         for (var i = 0; i < settingKeys.length; i++) {
             var setting = settingKeys[i];
             localStorage[setting] = Boolean(this[setting]);
-            console.log(setting + ": " + localStorage[setting]);
+            //console.log(setting + ": " + localStorage[setting]);
         }
     },
 
