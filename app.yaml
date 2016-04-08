@@ -40,8 +40,7 @@ libraries:
   version: latest
 
 skip_files:
-- ^skip/
 - ^\.hg/
 - ^\.idea/
-- ^\.idea2/
-- ^\test_data/
+- ^skip/
+- ^test_data/
