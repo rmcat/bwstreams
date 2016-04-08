@@ -29,19 +29,21 @@ var settings = {
     },
 
     loadSettings: function() {
-        if (!supportsLocalStorage) {
-            console.log("localStorage not supported");
-            return;
-        }
-        for (var setting in this) {
-            if (!this.hasOwnProperty(setting) || typeof(this[setting]) != "boolean") {
-                continue;
+        console.log("loadSettings");
+        var settingKeys = this.keys();
+        for (var i = 0; i < settingKeys.length; i++) {
+            var setting = settingKeys[i];
+            if (supportsLocalStorage && localStorage.hasOwnProperty(setting)) {
+                this[setting] = localStorage[setting] === "true";
             }
-            if (!localStorage.hasOwnProperty(setting)) {
-                continue;
+            var checkboxId = this.settingToCheckboxId(setting);
+            var element = $("#" + checkboxId);
+            console.log(setting + ": " + localStorage[setting]);
+            if (element.length && element.is(":checked") !== this[setting])
+            {
+                element.click();
+                console.log("Fired click event");
             }
-            this[setting] = localStorage[setting] === "true";
-            console.log(setting + ": " + this[setting]);
         }
     },
 
@@ -50,10 +52,10 @@ var settings = {
             console.log("localStorage not supported");
             return;
         }
-        for (var setting in this) {
-            if (!this.hasOwnProperty(setting) || typeof(this[setting]) != "boolean") {
-                continue;
-            }
+        console.log("saveSettings");
+        var settingKeys = this.keys();
+        for (var i = 0; i < settingKeys.length; i++) {
+            var setting = settingKeys[i];
             localStorage[setting] = Boolean(this[setting]);
             console.log(setting + ": " + localStorage[setting]);
         }
@@ -266,12 +268,6 @@ var timer = {
 }
 
 jQuery(document).ready(function($) {
-    settings.loadSettings();
-
-    watch(settings, settings.keys(), function(){
-        settings.saveSettings();
-    });
-
     $("#btn-refresh").click(function() {
         updater.refreshStreams();
     });
@@ -293,6 +289,11 @@ jQuery(document).ready(function($) {
         settings.callback("autoRefresh");
     });
 
+    settings.loadSettings();
+
+    watch(settings, settings.keys(), function(){
+        settings.saveSettings();
+    });
+
     updater.refreshStreams();
-    settings.callback("autoRefresh");
 });
