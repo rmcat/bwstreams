@@ -10,6 +10,14 @@ var settings = {
     showLastSeen: true,
     autoRefresh: true,
 
+    keys: (function() {
+        return Object.keys(this).filter(s => typeof(this[s]) == "boolean")
+    }),
+
+    visibilityKeys: (function() {
+        return this.keys().filter(s => s.substring(0, 4) === "show");
+    }),
+
     resetSettings: function() {
         this.showOffline = false;
         this.showRace = false;
@@ -96,8 +104,7 @@ var settings = {
             $("." + className).hide();
         }
     }
-}
-
+};
 
 function getLastSeenStatus(isOnline, lastSeen) {
     if (isOnline) {
@@ -217,11 +224,9 @@ var updater = {
         replaceTable(this.json["streams"], this.json["last_update"]);
         setLastUpdate(this.json["last_update"]);
         $.bootstrapSortable(true);
-        for (var s in settings) {
-            if (s.substring(0, 4) !== "show" || !settings.hasOwnProperty(s) || typeof(settings[s]) != "boolean") {
-                continue;
-            }
-            settings.callback(s);
+        var visibilitySettings = settings.visibilityKeys();
+        for (var i = 0; i < visibilitySettings.length; i++) {
+            settings.callback(visibilitySettings[i]);
         }
         $("#btn-refresh").removeClass("fa-spin");
         $("#btn-refresh").removeClass("active");
@@ -263,7 +268,7 @@ var timer = {
 jQuery(document).ready(function($) {
     settings.loadSettings();
 
-    watch(settings, ["showOffline", "showRace", "showViewers", "showHigh", "showDuration", "showLastSeen", "autoRefresh"], function(){
+    watch(settings, settings.keys(), function(){
         settings.saveSettings();
     });
 
@@ -271,12 +276,10 @@ jQuery(document).ready(function($) {
         updater.refreshStreams();
     });
 
-    for (var s in settings) {
-        if (s.substring(0, 4) !== "show" || !settings.hasOwnProperty(s) || typeof(settings[s]) != "boolean") {
-            continue;
-        }
+    var visibilitySettings = settings.visibilityKeys();
+    for (var i = 0; i < visibilitySettings.length; i++) {
         (function() {
-            var setting = s;
+            var setting = visibilitySettings[i];
             var checkboxId = settings.settingToCheckboxId(setting);
             $("#" + checkboxId).click(function() {
                 settings[setting] = $("#" + checkboxId).is(":checked");
