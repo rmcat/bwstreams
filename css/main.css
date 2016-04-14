@@ -1,11 +1,13 @@
 body {
   font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
+  background-color: #f1f1f1;
 }
 
 .table tbody tr td, .table thead tr th {
   padding-top: 4px;
   padding-bottom: 4px;
   border: 0px;
+  background-color: #fff;
 }
 
 .table thead tr th {
