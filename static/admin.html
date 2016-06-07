@@ -99,10 +99,10 @@ body {
             <td>Race</td>
             <td>
                  <select id="race" class="form-control input-sm">
-                    <option value="None">None</option>
-                    <option value="Protoss">Protoss</option>
-                    <option value="Terran">Terran</option>
-                    <option value="Zerg">Zerg</option>
+                    <option value="">None</option>
+                    <option value="protoss">Protoss</option>
+                    <option value="terran">Terran</option>
+                    <option value="zerg">Zerg</option>
                 </select>
             </td>
         </tr>
@@ -190,10 +190,7 @@ function streamAdd(json) {
         setError("Invslid nickname");
         return;
     }
-    let race = document.getElementById(idRace).value.toLowerCase();
-    if (race === "none") {
-        race = "";
-    }
+    let race = document.getElementById(idRace).value;
     let maxViewers = parseInt(document.getElementById(idMaxViewers).value, 10);
     if (!isFinite(maxViewers) || maxViewers < 0) {
         setError("Invalid max viewers");
@@ -226,10 +223,7 @@ function streamEdit(json) {
         setError("Invalid nickname");
         return;
     }
-    let race = document.getElementById(idRace).value.toLowerCase();
-    if (race === "none") {
-        race = "";
-    }
+    let race = document.getElementById(idRace).value;
     let maxViewers = parseInt(document.getElementById(idMaxViewers).value, 10);
     if (!isFinite(maxViewers) || maxViewers < 0) {
         setError("Invalid max viewers");
