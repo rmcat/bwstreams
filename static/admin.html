@@ -344,6 +344,14 @@ function enableFields() {
     }
 }
 
+function fillFields() {
+    let streamId = document.getElementById(idSelectStreamId).value;
+    let json = JSON.parse(document.getElementById(idTextLeft).value);
+    document.getElementById("nickname").value = json[streamId]["nickname"];
+    document.getElementById("race").value = json[streamId]["game_info"]["race"];
+    document.getElementById("max-viewers").value = json[streamId]["max_viewers"];
+}
+
 function modifyJsonLeftBase() {
     let json = JSON.parse(document.getElementById(idTextLeft).value);
     modifyJson(json);
@@ -368,6 +376,7 @@ function modifyJson(json) {
 jsondiffpatch.formatters.html.hideUnchanged();
 document.getElementById(idTextRight).onkeyup = updateVisualDiff;
 document.getElementById(idSelectOperation).onchange = enableFields;
+document.getElementById(idSelectStreamId).onchange = fillFields;
 enableFields();
 getData();
 
