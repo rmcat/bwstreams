@@ -183,11 +183,51 @@ class StreamsJsonHandler(webapp2.RequestHandler):
         self.response.out.write(json_str)
 
 
+class ExportAfreecaDatabaseHandler(webapp2.RequestHandler):
+    @utils.wrap_exception
+    def get(self):
+        increment_hit_counter(datastore_key_hits_streams_json)
+
+        # Get database
+        db = memcache.get(memcache_key_database)
+        if db is None:
+            logger.warn('memcache failed on key: {}'.format(memcache_key_database))
+            db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
+            db = utils.json_to_dict(db_json)
+            memcache.set(memcache_key_database, db)
+
+        # Get last update time
+        last_update_time = memcache.get(memcache_key_last_update)
+        if last_update_time is None:
+            logger.warn('memcache failed on key: {}'.format(memcache_key_last_update))
+            last_update_time = ndb_get_entity(Time, datastore_key_last_update).value
+            memcache.set(memcache_key_last_update, last_update_time)
+
+        json_obj = dict()
+        for key, value in db.items():
+            stream_type, stream_id = streams.database_type_and_id(key)
+            if stream_type != 'afreeca':
+                continue
+            race = value['game_info']['race']
+            nickname = value['nickname']
+            json_obj[stream_id] = [ nickname, race ]
+
+        # Output in Snipealot formatting
+        json_str = '{\n'
+        for key, value in sorted(json_obj.items()):
+            json_str += '    "{}": [ "{}", "{}" ],\n'.format(key, value[0], value[1])
+        json_str = json_str[:-2] + '\n}\n'
+
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json_str)
+
+
 app = webapp2.WSGIApplication([
     ('/admin/update_database', UpdateDatabaseHandler),
     ('/admin/backup_database', BackupDatabaseHandler),
     ('/admin/backup_manual', BackupManualHandler),
     ('/admin/initialise_database', InitialiseDatabaseHandler),
     ('/admin/edit_database', AdminHandler),
+    ('/afreeca_database.json', ExportAfreecaDatabaseHandler),
     ('/streams.json', StreamsJsonHandler),
 ], debug=True)

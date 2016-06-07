@@ -25,6 +25,11 @@ handlers:
 - url: /
   static_files: static/streams.html
   upload: static/streams.html
+- url: /diff.html
+  static_files: static/diff.html
+  upload: static/diff.html
+- url: /afreeca_database.json
+  script: src.app.app
 - url: /admin/.*
   script: src.app.app
   login: admin

@@ -84,6 +84,11 @@ def database_key(stream_type, stream_id):
     return stream_type + '_' + stream_id
 
 
+def database_type_and_id(key):
+    split_index = key.find('_')
+    return (key[:split_index], key[split_index + 1:])
+
+
 def update_database(db, streams):
     time = datetime.datetime.utcnow()
 

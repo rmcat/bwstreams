@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>afreeca_database.json diff</title>
+<link href="css/jsondiffpatch/html.css" rel="stylesheet">
+<link href="css/jsondiffpatch/annotated.css" rel="stylesheet">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<style>
+body {
+    background-color: #eee;
+}
+
+.center {
+    text-align: center;
+}
+
+.panel-center {
+    float: none;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="panel panel-default panel-center"><div class="panel-body">
+<div id="visual"></div>
+</div></div>
+
+<script src="js/jquery-2.2.3.min.js"></script>
+<script type="text/javascript" src="js/jsondiffpatch/jsondiffpatch.min.js"></script>
+<script type="text/javascript" src="js/jsondiffpatch/jsondiffpatch-formatters.min.js"></script>
+<script>
+"use strict";
+
+function getData(url) {
+    return $.getJSON(url);
+}
+
+var jsonUrls = [ "/afreeca_database.json", "https://raw.githubusercontent.com/AleXoundOS/Snipealot-LQ-Restream-Bot/master/afreeca_database.json" ];
+var ajax = [];
+for (var i = 0; i < jsonUrls.length; i++) {
+    ajax.push(getData(jsonUrls[i]));
+}
+
+jsondiffpatch.formatters.html.hideUnchanged();
+$.when.apply($, ajax).done(function() {
+    let left = arguments[0][0];
+    let right = arguments[1][0];
+    let delta = jsondiffpatch.diff(left, right);
+    document.getElementById("visual").innerHTML = jsondiffpatch.formatters.html.format(delta, left);
+});
+</script>
+
+</body>
+</html>
