@@ -132,9 +132,12 @@ def backup_database(backup_key):
 class AdminHandler(webapp2.RequestHandler):
     def post(self):
         updated_db_json = self.request.get('database')
-        self.response.write('<html><body><textarea readonly rows="80" cols="120">')
+        self.response.write('<html><body>')
+        self.response.write('<a href="/admin.html">Back to admin</a>')
+        self.response.write('<p><textarea readonly rows="80" cols="120">')
         self.response.write(updated_db_json)
-        self.response.write('</textarea></body></html>')
+        self.response.write('</textarea>')
+        self.response.write('</body></html>')
         logger.info('Editing database: {}'.format(updated_db_json))
         edit_database(updated_db_json)
 
