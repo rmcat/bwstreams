@@ -5,7 +5,7 @@ var settings = {
     showOffline: false,
     showRace: false,
     showViewers: true,
-    showHigh: false,
+    showPeak: false,
     showDuration: true,
     showLastSeen: true,
     autoRefresh: true,
@@ -70,8 +70,8 @@ var settings = {
             case "showViewers":
                 className = "stream-col-viewers";
                 break;
-            case "showHigh":
-                className = "stream-col-high";
+            case "showPeak":
+                className = "stream-col-peak";
                 break;
             case "showDuration":
                 className = "stream-col-duration";
@@ -136,7 +136,7 @@ function replaceTable(streams, updateTime) {
                 [nickname,     { "class": [ "stream-col-nickname" ] } ],
                 [raceText,     { "class": [ "stream-col-race", "text-capitalize" ] } ],
                 [viewers,      { "class": [ "stream-col-viewers", "text-center" ] } ],
-                [maxViewers,   { "class": [ "stream-col-high", "text-center" ] } ],
+                [maxViewers,   { "class": [ "stream-col-peak", "text-center" ] } ],
                 [durationText, { "class": [ "stream-col-duration", "text-center" ], "data-value": durationValue } ],
                 [lastSeenText, { "class": [ "stream-col-last-seen", "text-center" ], "data-value": lastSeenValue } ],
             ];
