@@ -116,6 +116,7 @@ body {
             <td></td>
             <td>
                 <input class="btn btn-default btn-sm" type="reset" value="Clear">
+                <input class="btn btn-default" type="button" value="Submit change" onclick="modifyJsonRightBase()">
             </td>
         </tr>
     </table>
@@ -140,9 +141,7 @@ body {
 
 <div class="spacer-sm"></div>
 <div class="center">
-    <input class="btn btn-default" type="button" value="Modify Left" onclick="modifyJsonLeftBase()">
     <input class="btn btn-default" type="button" value="Reset" onclick="getData()">
-    <input class="btn btn-default" type="button" value="Modify Right" onclick="modifyJsonRightBase()">
 </div>
 
 <div class="spacer"></div>
@@ -350,11 +349,6 @@ function fillFields() {
     document.getElementById("nickname").value = json[streamId]["nickname"];
     document.getElementById("race").value = json[streamId]["game_info"]["race"];
     document.getElementById("max-viewers").value = json[streamId]["max_viewers"];
-}
-
-function modifyJsonLeftBase() {
-    let json = JSON.parse(document.getElementById(idTextLeft).value);
-    modifyJson(json);
 }
 
 function modifyJsonRightBase() {
