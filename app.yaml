@@ -45,6 +45,7 @@ libraries:
   version: latest
 
 skip_files:
+- ^\.git/
 - ^\.hg/
 - ^\.idea/
 - ^skip/
