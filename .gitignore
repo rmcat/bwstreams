@@ -1,0 +1,4 @@
+*.pyc
+.vs/
+skip/
+test_data/
