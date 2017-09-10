@@ -1,4 +1,5 @@
-*.pyc
 .vs/
 skip/
 test_data/
+*.pyc
+client-secret.json
