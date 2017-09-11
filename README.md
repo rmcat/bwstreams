@@ -1,27 +1,38 @@
 # bwstreams
 
-## What is bwstreams?
+ [![Build Status](https://travis-ci.org/rmcat/bwstreams.svg?branch=master)](https://travis-ci.org/rmcat/bwstreams)
 
-[bwstreams](https://bwstreams.appspot.com) is an App Engine application that lists Brood War streams. Currently, only streams from Afreeca are supported.
+## Overview
 
-## Local Development Server Setup
+bwstreams is a Google App Engine application that tracks specific Brood War streams from [AfreecaTV](http://afreecatv.com). The webapp is currently hosted at https://bwstreams.appspot.com.
 
-1. Download and install the original [App Engine SDK for Python](https://cloud.google.com/appengine/docs/standard/python/download)
-2. Start _Google App Engine Launcher_
-3. Add _bwstreams_ as an existing application (_File > Add Existing Application_)
-4. Run _bwstreams_
+## Running the development server
 
-The app should be up and running after executing these instructions.
+1. Install the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/python/download)
+2. Open Google Cloud SDK Shell
+3. Navigate to the project root and run the command ``dev_appserver.py app.yaml``
 
-## Useful Links
+## Adding streams
 
-| Description               | Local Link                                        | Online Link                                               |
+To initialise the database from a [JSON list of streams](afreeca_database.json), go to https://localhost:8080/admin/initialise_database.
+
+Streams may also be added through the admin control panel at https://localhost:8080/admin.html.
+
+## Triggering an update
+
+Stream information is automatically updated [once per minute](cron.yaml). If you wish to to trigger a manual update, go to http://localhost:8080/admin/update_database.
+
+## Data in JSON format
+
+Stream information may be acessed through the JSON file at https://localhost:8080/streams.json.
+
+## Summary of links
+
+| Description               | Local Dev Link                                    | Hosted Link                                               |
 | --                        | --                                                | --                                                        |
 | Main page                 | http://localhost:8080                             | https://bwstreams.appspot.com                             |
-| Stream information (JSON) | http://localhost:8080/streams.json                | https://bwstreams.appspot.com/streams.json                |
-| Afreeca list (JSON)       | http://localhost:8080/afreeca_database.json       | https://bwstreams.appspot.com/afreeca_database.json       |
+| List of streams           | http://localhost:8080/afreeca_database.json       | https://bwstreams.appspot.com/afreeca_database.json       |
 | Initialise database       | http://localhost:8080/admin/initialise_database   | https://bwstreams.appspot.com/admin/initialise_database   |
-| Trigger database update   | http://localhost:8080/admin/update_database       | https://bwstreams.appspot.com/admin/update_database       |
 | Control panel             | http://localhost:8080/admin.html                  | https://bwstreams.appspot.com/admin.html                  |
-
-Note: Port 8080 in the above links is the regular port on the local development server.
+| Trigger update            | http://localhost:8080/admin/update_database       | https://bwstreams.appspot.com/admin/update_database       |
+| Stream information        | http://localhost:8080/streams.json                | https://bwstreams.appspot.com/streams.json                |
