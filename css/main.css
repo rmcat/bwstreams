@@ -3,6 +3,26 @@ body {
   background-color: #f1f1f1;
 }
 
+#footer {
+  font-size: 90%;
+}
+
+#footer ul {
+  float: left;
+  padding: 0;
+}
+
+#footer ul li {
+  display: inline;
+  list-style-type: none;
+  margin-right: 10px;
+}
+
+#footer p {
+  float: right;
+  padding: 0;
+}
+
 .table tbody tr td, .table thead tr th {
   padding-top: 4px;
   padding-bottom: 4px;
