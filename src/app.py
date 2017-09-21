@@ -1,5 +1,6 @@
 import datetime
 import json
+import random
 
 import webapp2
 from google.appengine.ext import ndb
@@ -82,9 +83,13 @@ def modify_last_update_time(utc_now):
 
 @ndb.transactional()
 def increment_hit_counter(key):
-    hit_count = ndb_get_entity(HitCounter, key)
-    hit_count.value += 1
-    hit_count.put()
+    # Approximate hits to save datastore writes
+    n = 100
+    r = random.randint(0, n - 1)
+    if r == 0:
+        hit_count = ndb_get_entity(HitCounter, key)
+        hit_count.value += n
+        hit_count.put()
 
 
 class InitialiseDatabaseHandler(webapp2.RequestHandler):
