@@ -130,7 +130,7 @@ function replaceTable(streams, updateTime) {
             }
             var lastSeenText = getLastSeenStatus(isOnline, stream["last_seen"]);
             var lastSeenValue = stream["last_seen"] || 0;
-            var url = "http://play.afreeca.com/" + stream["id"] + "/embed";
+            var url = "http://play.afreecatv.com/" + stream["id"] + "/embed";
 
             var cells = [
                 [nickname,     { "class": [ "stream-col-nickname" ] } ],
