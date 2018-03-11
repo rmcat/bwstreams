@@ -163,7 +163,7 @@ function replaceTable(streams, updateTime) {
                 }
                 if (i == 0) {
                     var span = document.createElement("span");
-                    span.innerHTML = "⚫ ";
+                    span.innerHTML = "● ";
                     newCell.appendChild(span);
                     var a = document.createElement("a");
                     a.href = url;
