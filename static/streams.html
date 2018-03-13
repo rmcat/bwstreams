@@ -21,43 +21,71 @@
                 <h5 class="modal-title">Settings</h5>
             </div>
             <div class="modal-body">
-                <p>Columns</p>
+
+                <p>Streams</p>
                 <div class="checkbox">
-                    <input id="checkbox-show-offline" type="checkbox" autocomplete="off">
-                    <label for="checkbox-show-offline">
-                        Offline
+                    <input id="checkbox-show-row-race-none" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-row-race-none">
+                        Race: None
                     </label>
                 </div>
                 <div class="checkbox">
-                    <input id="checkbox-show-race" type="checkbox" autocomplete="off">
-                    <label for="checkbox-show-race">
+                    <input id="checkbox-show-row-race-protoss" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-row-race-protoss">
+                        Race: Protoss
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input id="checkbox-show-row-race-terran" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-row-race-terran">
+                        Race: Terran
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input id="checkbox-show-row-race-zerg" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-row-race-zerg">
+                        Race: Zerg
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input id="checkbox-show-row-offline" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-row-offline">
+                        Offline
+                    </label>
+                </div>
+
+                <p>Columns</p>
+                <div class="checkbox">
+                    <input id="checkbox-show-col-race" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-col-race">
                         Race
                     </label>
                 </div>
                 <div class="checkbox">
-                    <input id="checkbox-show-viewers" type="checkbox" autocomplete="off">
-                    <label for="checkbox-show-viewers">
+                    <input id="checkbox-show-col-viewers" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-col-viewers">
                         Viewers
                     </label>
                 </div>
                 <div class="checkbox">
-                    <input id="checkbox-show-peak" type="checkbox" autocomplete="off">
-                    <label for="checkbox-show-peak">
+                    <input id="checkbox-show-col-peak" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-col-peak">
                         Peak
                     </label>
                 </div>
                 <div class="checkbox">
-                    <input id="checkbox-show-duration" type="checkbox" autocomplete="off">
-                    <label for="checkbox-show-duration">
+                    <input id="checkbox-show-col-duration" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-col-duration">
                         Duration
                     </label>
                 </div>
                 <div class="checkbox">
-                    <input id="checkbox-show-last-seen" type="checkbox" autocomplete="off">
-                    <label for="checkbox-show-last-seen">
+                    <input id="checkbox-show-col-last-seen" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-col-last-seen">
                         Last Seen
                     </label>
                 </div>
+                
                 <p>Refresh</p>
                 <div class="checkbox">
                     <input id="checkbox-auto-refresh" type="checkbox" autocomplete="off">
@@ -65,13 +93,14 @@
                         Auto-refresh
                     </label>
                 </div>
+                
             </div>
         </div>
     </div>
 </div>
 
 <div id="left-column" style="margin: 10px">
-    
+
     <div style="text-align: right; margin: 10px 0">
         <div class="btn-group btn-group-sm">
             <button id="btn-refresh" type="button" class="btn btn-light">

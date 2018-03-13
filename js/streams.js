@@ -2,12 +2,16 @@
 
 var supportsLocalStorage = typeof(Storage) !== "undefined";
 var settings = {
-    showOffline: false,
-    showRace: false,
-    showViewers: true,
-    showPeak: false,
-    showDuration: true,
-    showLastSeen: true,
+    showRowRaceNone: true,
+    showRowRaceProtoss: true,
+    showRowRaceTerran: true,
+    showRowRaceZerg: true,
+    showRowOffline: false,
+    showColRace: false,
+    showColViewers: true,
+    showColPeak: false,
+    showColDuration: true,
+    showColLastSeen: true,
     autoRefresh: true,
 
     keys: (function() {
@@ -54,36 +58,56 @@ var settings = {
     settingToCheckboxId: function(s) {
         return "checkbox-" + s.replace(/([A-Z])/g, function (x, y){return "-" + y.toLowerCase()}).replace(/^-/, "");
     },
-    
-    callback: function(setting) {
-        var className;
-        switch (setting) {
-            case "autoRefresh":
-                timer.updateTimerStatus();
-                return;
-            case "showOffline":
-                className = "stream-row-offline";
-                break;
-            case "showRace":
-                className = "stream-col-race";
-                break;
-            case "showViewers":
-                className = "stream-col-viewers";
-                break;
-            case "showPeak":
-                className = "stream-col-peak";
-                break;
-            case "showDuration":
-                className = "stream-col-duration";
-                break;
-            case "showLastSeen":
-                className = "stream-col-last-seen";
-                break;
+
+    settingToClassName: function(s) {
+        switch (s) {
+            case "showRowRaceNone":
+                return "race-none";
+            case "showRowRaceProtoss":
+                return "race-protoss";
+            case "showRowRaceTerran":
+                return "race-terran";
+            case "showRowRaceZerg":
+                return "race-zerg";
+            case "showRowOffline":
+                return "stream-row-offline";
+            case "showColRace":
+                return "stream-col-race";
+            case "showColViewers":
+                return "stream-col-viewers";
+            case "showColPeak":
+                return "stream-col-peak";
+            case "showColDuration":
+                return "stream-col-duration";
+            case "showColLastSeen":
+                return "stream-col-last-seen";
             default:
                 throw "Unknown value in switch statement: " + setting;
         }
+    },
+    
+    callback: function(setting) {
+        if (setting === "autoRefresh") {
+            timer.updateTimerStatus();
+            return;
+        }
+        
+        var className = this.settingToClassName(setting); 
         if (this[setting]) {
-            $("." + className).show();
+            if (setting === "showRowOffline") {
+                var showRaceSettings = this.keys().filter(s => s.substring(0, 11) === "showRowRace");
+                for (var i = 0; i < showRaceSettings.length; i++) {
+                    var showRateSetting = showRaceSettings[i];
+                    if (this[showRateSetting]) {
+                        var query = "." + className + "." + this.settingToClassName(showRateSetting);
+                        $(query).show();
+                    }
+                }
+            } else if (setting.substring(0, 11) === "showRowRace" && !this["showRowOffline"]) {
+                $("." + className + ".stream-row-online").show();
+            } else {
+                $("." + className).show();
+            }
         } else {
             $("." + className).hide();
         }
