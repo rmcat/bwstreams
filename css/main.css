@@ -1,6 +1,7 @@
 body {
   font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
   background-color: #f1f1f1;
+  font-size: 0.9rem;
 }
 
 #footer {
@@ -83,15 +84,14 @@ body {
   }
 }
 
-#btn-refresh {
-  color: #060;
+#icon-refresh {
+  color: #666;
 }
 
-#btn-refresh.active {
-  color: #090 !important;
+#icon-refresh.active {
+  color: #999 !important;
 }
 
-#btn-refresh:hover {
-  color: #0c0;
-  cursor: pointer;
+#icon-settings {
+  color: #666;
 }

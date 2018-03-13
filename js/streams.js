@@ -42,7 +42,7 @@ var settings = {
             //console.log("localStorage not supported");
             return;
         }
-        console.log("saveSettings");
+        //console.log("saveSettings");
         var settingKeys = this.keys();
         for (var i = 0; i < settingKeys.length; i++) {
             var setting = settingKeys[i];
@@ -199,8 +199,8 @@ var updater = {
     },
 
     refreshStarted: function() {
-        $("#btn-refresh").addClass("fa-spin");
-        $("#btn-refresh").addClass("active");
+        $("#icon-refresh").addClass("fa-spin");
+        $("#icon-refresh").addClass("active");
         timer.resetTimer();
     },
 
@@ -212,8 +212,8 @@ var updater = {
         for (var i = 0; i < visibilitySettings.length; i++) {
             settings.callback(visibilitySettings[i]);
         }
-        $("#btn-refresh").removeClass("fa-spin");
-        $("#btn-refresh").removeClass("active");
+        $("#icon-refresh").removeClass("fa-spin");
+        $("#icon-refresh").removeClass("active");
     }
 }
 

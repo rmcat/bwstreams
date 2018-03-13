@@ -14,52 +14,72 @@
 </head>
 <body>
 
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Settings</h5>
+            </div>
+            <div class="modal-body">
+                <p>Columns</p>
+                <div class="checkbox">
+                    <input id="checkbox-show-offline" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-offline">
+                        Offline
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input id="checkbox-show-race" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-race">
+                        Race
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input id="checkbox-show-viewers" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-viewers">
+                        Viewers
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input id="checkbox-show-peak" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-peak">
+                        Peak
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input id="checkbox-show-duration" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-duration">
+                        Duration
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <input id="checkbox-show-last-seen" type="checkbox" autocomplete="off">
+                    <label for="checkbox-show-last-seen">
+                        Last Seen
+                    </label>
+                </div>
+                <p>Refresh</p>
+                <div class="checkbox">
+                    <input id="checkbox-auto-refresh" type="checkbox" autocomplete="off">
+                    <label for="checkbox-auto-refresh">
+                        Auto-refresh
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="left-column" style="margin: 10px">
-    <div style="text-align: right; margin: 10px">
-        <div class="checkbox checkbox-inline">
-            <input id="checkbox-show-offline" type="checkbox" autocomplete="off">
-            <label for="checkbox-show-offline">
-                Offline
-            </label>
-        </div>
-        <div class="checkbox checkbox-inline">
-            <input id="checkbox-show-race" type="checkbox" autocomplete="off">
-            <label for="checkbox-show-race">
-                Race
-            </label>
-        </div>
-        <div class="checkbox checkbox-inline">
-            <input id="checkbox-show-viewers" type="checkbox" autocomplete="off">
-            <label for="checkbox-show-viewers">
-                Viewers
-            </label>
-        </div>
-        <div class="checkbox checkbox-inline">
-            <input id="checkbox-show-peak" type="checkbox" autocomplete="off">
-            <label for="checkbox-show-peak">
-                Peak
-            </label>
-        </div>
-        <div class="checkbox checkbox-inline">
-            <input id="checkbox-show-duration" type="checkbox" autocomplete="off">
-            <label for="checkbox-show-duration">
-                Duration
-            </label>
-        </div>
-        <div class="checkbox checkbox-inline">
-            <input id="checkbox-show-last-seen" type="checkbox" autocomplete="off">
-            <label for="checkbox-show-last-seen">
-                Last Seen
-            </label>
-        </div>
-        <div class="checkbox checkbox-inline">
-            <input id="checkbox-auto-refresh" type="checkbox" autocomplete="off">
-            <label for="checkbox-auto-refresh">
-                Auto-refresh
-            </label>
-        </div>
-        <div style="margin-left: 10px; display: inline-block">
-            <i id="btn-refresh" class="btn-refresh fa fa-lg fa-spinner" title="Refresh"></i>
+    
+    <div style="text-align: right; margin: 10px 0">
+        <div class="btn-group btn-group-sm">
+            <button id="btn-refresh" type="button" class="btn btn-light">
+                <i id="icon-refresh" class="fa fa-lg fa-spinner"></i>&nbsp; Refresh
+            </button>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#settingsModal">
+                <i id="icon-settings" class="fa fa-lg fa-cog"></i>&nbsp; Settings
+            </button>
         </div>
     </div>
 
@@ -89,16 +109,15 @@
         </ul>
         <p>Last updated <span id="text-last-updated"></span></p>
     </div>
-</div>
+    </div>
 
-<script src="js/moment.min.js"></script>
-<script src="js/jquery-2.2.3.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/bootstrap-sortable.js"></script>
-<script src="js/watch.min.js"></script>
-<script src="js/streams.js"></script>
-
-<!-- Automatically deployed -->
+    <script src="js/moment.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-sortable.js"></script>
+    <script src="js/watch.min.js"></script>
+    <script src="js/streams.js"></script>
 
 </body>
 </html>
