@@ -50,6 +50,10 @@ body {
   opacity: 0.5;
 }
 
+.stream-col-viewers, .stream-col-peak, .stream-col-duration, .stream-col-last-seen {
+  text-align: center;
+}
+
 .race-none span {
   color: #ddd;
 }
