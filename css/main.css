@@ -84,14 +84,10 @@ body {
   }
 }
 
-#icon-refresh {
+#icon-refresh, #icon-settings {
   color: #666;
 }
 
 #icon-refresh.active {
   color: #999 !important;
-}
-
-#icon-settings {
-  color: #666;
 }
