@@ -1,11 +1,16 @@
 body {
   font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
-  background-color: #f1f1f1;
+  background-color: #222;
   font-size: 0.9rem;
 }
 
 #footer {
   font-size: 90%;
+  color: #ddd;
+}
+
+#footer a {
+  color: #4af;
 }
 
 #footer ul {
@@ -89,7 +94,7 @@ body {
 }
 
 #icon-refresh, #icon-settings {
-  color: #666;
+  color: #444;
 }
 
 #icon-refresh.active {
