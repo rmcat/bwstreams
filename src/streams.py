@@ -60,7 +60,7 @@ def format_afreeca_response_to_json(data):
 def get_current_streams():
     """Returns a list of streams (with only relevant keys)"""
     streams = list()
-    afreeca_url = 'http://live.afreeca.com:8057/afreeca/broad_list_api.php'
+    afreeca_url = 'http://live.afreecatv.com:8057/afreeca/broad_list_api.php'
     # afreeca_url = 'http://localhost:8000/broad_list_api.php'
     afreeca_response = utils.fetch_url(afreeca_url)
     afreeca_json_str = format_afreeca_response_to_json(afreeca_response)
