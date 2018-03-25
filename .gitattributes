@@ -1,0 +1,7 @@
+/css/** linguist-vendored
+/css/main.css linguist-vendored=false
+/font-awesome/** linguist-vendored
+/fonts/** linguist-vendored
+/js/** linguist-vendored
+/js/streams.js linguist-vendored=false
+/test_data/** linguist-detectable=false
