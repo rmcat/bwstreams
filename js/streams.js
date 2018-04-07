@@ -11,7 +11,7 @@ var settings = {
     showColViewers: true,
     showColPeak: false,
     showColDuration: true,
-    showColLastSeen: true,
+    showColLastSeen: false,
     autoRefresh: true,
     useFullScreenLinks: false,
 
