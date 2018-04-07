@@ -13,6 +13,7 @@ var settings = {
     showColDuration: true,
     showColLastSeen: true,
     autoRefresh: true,
+    useFullScreenLinks: false,
 
     keys: (function() {
         return Object.keys(this).filter(s => typeof(this[s]) == "boolean")
@@ -91,6 +92,16 @@ var settings = {
             timer.updateTimerStatus();
             return;
         }
+
+        if (setting === "useFullScreenLinks") {
+            $("a.stream-link").each(function() {
+                var streamLink = $(this).attr("href");
+                var streamId = streamLink.split("/")[3];
+                var updatedStreamLink = getStreamUrl(streamId, settings["useFullScreenLinks"]);
+                $(this).attr("href", updatedStreamLink);
+            });
+            return;
+        }
         
         var className = this.settingToClassName(setting); 
         if (this[setting]) {
@@ -113,6 +124,14 @@ var settings = {
         }
     }
 };
+
+function getStreamUrl(streamId, useFullScreenLink) {
+    var url = "http://play.afreecatv.com/" + streamId;
+    if (useFullScreenLink) {
+        url += "/embed";
+    }
+    return url;
+}
 
 function getLastSeenStatus(isOnline, lastSeen) {
     if (isOnline) {
@@ -154,7 +173,7 @@ function replaceTable(streams, updateTime) {
             }
             var lastSeenText = getLastSeenStatus(isOnline, stream["last_seen"]);
             var lastSeenValue = stream["last_seen"] || 0;
-            var url = "http://play.afreecatv.com/" + stream["id"] + "/embed";
+            var url = getStreamUrl(stream["id"], settings["useFullScreenLinks"]);
 
             var cells = [
                 [nickname,     { "class": [ "stream-col-nickname" ] } ],
@@ -192,6 +211,7 @@ function replaceTable(streams, updateTime) {
                     var a = document.createElement("a");
                     a.href = url;
                     a.rel = "noreferrer";
+                    a.classList.add("stream-link");
                     a.appendChild(document.createTextNode(text));
                     newCell.appendChild(a);
                 } else {
@@ -293,6 +313,11 @@ jQuery(document).ready(function($) {
     $("#checkbox-auto-refresh").click(function() {
         settings["autoRefresh"] = $("#checkbox-auto-refresh").is(":checked");
         settings.callback("autoRefresh");
+    });
+
+    $("#checkbox-use-full-screen-links").click(function() {
+        settings["useFullScreenLinks"] = $("#checkbox-use-full-screen-links").is(":checked");
+        settings.callback("useFullScreenLinks");
     });
 
     settings.loadSettings();
