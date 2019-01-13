@@ -89,7 +89,7 @@ body {
 
 @media only screen and (min-width: 769px) {
   #left-column {
-    max-width: 768px;;
+    max-width: 768px;
   }
 }
 
@@ -99,4 +99,20 @@ body {
 
 #icon-refresh.active {
   color: #999 !important;
+}
+
+.hide-image {
+  z-index: 100;
+  position: absolute;
+  display: none;
+}
+
+.image-wrapper {
+  margin-left: 100px;
+}
+
+.preview:hover .hide-image {
+  display: block;
+  width: 128px;
+  height: 96px;
 }

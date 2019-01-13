@@ -174,6 +174,7 @@ function replaceTable(streams, updateTime) {
             var lastSeenText = getLastSeenStatus(isOnline, stream["last_seen"]);
             var lastSeenValue = stream["last_seen"] || 0;
             var url = getStreamUrl(stream["id"], settings["useFullScreenLinks"]);
+            var previewImage = stream["image"];
 
             var cells = [
                 [nickname,     { "class": [ "stream-col-nickname" ] } ],
@@ -214,6 +215,16 @@ function replaceTable(streams, updateTime) {
                     a.classList.add("stream-link");
                     a.appendChild(document.createTextNode(text));
                     newCell.appendChild(a);
+                    if (previewImage) {
+                        var div = document.createElement('div');
+                        var img = document.createElement('img');
+                        img.src = previewImage.replace(/^\/\//, 'https://');
+                        img.className = 'hide-image';
+                        div.className = 'image-wrapper';
+                        div.append(img);
+                        newCell.appendChild(div);
+                        newRow.classList.add("preview");
+                    }
                 } else {
                     newCell.appendChild(document.createTextNode(text));
                 }
