@@ -23,6 +23,8 @@ handlers:
 - url: /
   static_files: static/streams.html
   upload: static/streams.html
+  secure: always
+  redirect_http_response_code: 301
 - url: /diff.html
   static_files: static/diff.html
   upload: static/diff.html
@@ -31,10 +33,12 @@ handlers:
 - url: /admin/.*
   script: src.app.app
   login: admin
+  secure: always
 - url: /admin.html
   static_files: static/admin.html
   upload: static/admin.html
   login: admin
+  secure: always
 
 libraries:
 - name: webapp2
