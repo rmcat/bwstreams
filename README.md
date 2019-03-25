@@ -14,9 +14,9 @@ bwstreams is a Google App Engine application that tracks specific Brood War stre
 
 ## Adding streams
 
-To initialise the database from a [JSON list of streams](afreeca_database.json), go to https://localhost:8080/admin/initialise_database.
+To initialise the database from a [JSON list of streams](afreeca_database.json), go to http://localhost:8080/admin/initialise_database.
 
-Streams may also be added through the admin control panel at https://localhost:8080/admin.html.
+Streams may also be added through the admin control panel at http://localhost:8080/admin.html.
 
 ## Triggering an update
 
@@ -24,7 +24,7 @@ Stream information is automatically updated [once per minute](cron.yaml). If you
 
 ## Data in JSON format
 
-Stream information may be acessed through the JSON file at https://localhost:8080/streams.json.
+Stream information may be acessed through the JSON file at http://localhost:8080/streams.json.
 
 ## Summary of links
 
