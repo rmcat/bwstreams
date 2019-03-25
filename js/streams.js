@@ -126,7 +126,7 @@ var settings = {
 };
 
 function getStreamUrl(streamId, useFullScreenLink) {
-    var url = "http://play.afreecatv.com/" + streamId;
+    var url = "//play.afreecatv.com/" + streamId;
     if (useFullScreenLink) {
         url += "/embed";
     }
@@ -218,7 +218,7 @@ function replaceTable(streams, updateTime) {
                     if (previewImage) {
                         var div = document.createElement('div');
                         var img = document.createElement('img');
-                        img.src = previewImage.replace(/^\/\//, 'https://');
+                        img.src = previewImage;
                         img.className = 'hide-image';
                         div.className = 'image-wrapper';
                         div.append(img);
