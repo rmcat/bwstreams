@@ -207,22 +207,45 @@ function replaceTable(streams, updateTime) {
                 }
                 if (i == 0) {
                     var span = document.createElement("span");
+                    var raceAnchor = document.createElement("a");
+                    raceAnchor.classList.add("race-emoji");
+                    raceAnchor.innerHTML = race == "zerg"    ? "🦂"
+                                         : race == "protoss" ? "🛸"
+                                         : race == "terran"  ? "🌎"
+                                                             : "📺";
+                    var linkAnchor = document.createElement("a");
+                    linkAnchor.href = url;
+                    linkAnchor.rel = "noreferrer";
+                    linkAnchor.classList.add("stream-link");
+                    linkAnchor.appendChild(document.createTextNode(text));
                     if (broadcast) {
-                        span.setAttribute("data-image", broadcast);
+                        // Clickable preview for non-desktop
+                        raceAnchor.setAttribute("data-image", broadcast);
+                        raceAnchor.setAttribute("data-placement", "right");
+                        raceAnchor.setAttribute("data-content", "<img src='" + broadcast + "' width='470' height='270'>");
+                        raceAnchor.setAttribute("data-html", "true");
+                        raceAnchor.setAttribute("data-trigger", "focus");
+                        raceAnchor.setAttribute("data-toggle", "popover");
+                        raceAnchor.setAttribute("tabindex", "0");
+                        raceAnchor.setAttribute("title", '');
+
+                        // Hover preview for desktop
+                        linkAnchor.setAttribute("data-image", broadcast);
+                        linkAnchor.setAttribute("data-placement", "right");
+                        linkAnchor.setAttribute("data-content", "<img src='" + broadcast + "' width='470' height='270'>");
+                        linkAnchor.setAttribute("data-html", "true");
+                        linkAnchor.setAttribute("data-trigger", "hover");
+                        linkAnchor.setAttribute("data-toggle", "popover");
+                        linkAnchor.setAttribute("tabindex", "0");
+                        linkAnchor.setAttribute("title", '');
+
+                        // Preload images
                         new Image().src = broadcast;
                     }
-                    var raceSpan = document.createElement("span");
-                    raceSpan.innerHTML = race == "zerg"    ? "🦂 "
-                                       : race == "protoss" ? "🛸 "
-                                       : race == "terran"  ? "🌎 "
-                                                           : "📺 ";
-                    span.appendChild(raceSpan);
-                    var a = document.createElement("a");
-                    a.href = url;
-                    a.rel = "noreferrer";
-                    a.classList.add("stream-link");
-                    a.appendChild(document.createTextNode(text));
-                    span.appendChild(a);
+
+                    span.appendChild(raceAnchor);
+                    span.appendChild(document.createTextNode(" "));
+                    span.appendChild(linkAnchor);
                     newCell.appendChild(span);
                 } else {
                     newCell.appendChild(document.createTextNode(text));
@@ -272,23 +295,10 @@ var updater = {
         $("#icon-refresh").removeClass("fa-spin");
         $("#icon-refresh").removeClass("active");
 
-        var onlineRows = $(".stream-row-online");
-        onlineRows.on("mouseenter", function() {
-            var imageSrc = $(this).find("td span").first().data("image");
-            previewImage.attr("src", imageSrc);
-            console.log("Entered")
-            var divTop = $(window).height()/2 - previewDiv.outerHeight()/2;
-            var divLeft = $(window).width()/2 - previewDiv.outerWidth()/2;
-            console.log(divTop)
-            console.log(divLeft)
-            previewDiv.css({ top: divTop, left: divLeft, position: 'absolute' });
-            document.getElementById("overlay").style.display = "block";
-            previewDiv.show();
-        });
-        onlineRows.on("mouseleave", function() {
-            console.log("Left")
-            document.getElementById("overlay").style.display = "none";
-            previewDiv.hide();
+        $(function () {
+            $('[data-toggle="popover"]').popover({
+                container: '#streams'
+            })
         });
     }
 }
