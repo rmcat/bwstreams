@@ -45,11 +45,10 @@ def format_afreeca_response_to_json(data):
         data = data[len(b'var oBroadListData = '):-1]
     data = re.sub(b'\'', b'"', data)
     data = re.sub(r'[^\x00-\x7F]+', '', data)
-    pattern = '{[^}]*?' \
+    pattern = '{("broad_no"[^,]+),[^}]*?' \
               '("user_id"[^,]+),[^}]*?' \
               '("is_password"[^,]+),.*?' \
               '("broad_start"[^,]+),.*?' \
-              '("broad_img"[^,]+),.*?' \
               '("total_view_cnt"[^,]+),[^}]*?' \
               '}'
     replace = '\n{ \\1, \\2, \\3, \\4, \\5 }'
@@ -73,7 +72,7 @@ def get_current_streams():
         viewers = int(info['total_view_cnt'])
         locked = info['is_password'] == 'Y'
         online_since = utils.get_utc_time(info['broad_start'], time_format, time_offset)
-        image = info['broad_img']
+        image = 'https://liveimg.afreecatv.com/{}_480x270.jpg'.format(info['broad_no'])
         stream = {'type': 'afreeca', 'id': id, 'viewers': viewers, 'online_since': online_since,
                   'image': image, 'locked': locked}
         streams.append(stream)

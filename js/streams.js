@@ -174,7 +174,7 @@ function replaceTable(streams, updateTime) {
             var lastSeenText = getLastSeenStatus(isOnline, stream["last_seen"]);
             var lastSeenValue = stream["last_seen"] || 0;
             var url = getStreamUrl(stream["id"], settings["useFullScreenLinks"]);
-            var previewImage = stream["image"];
+            var broadcast = stream["image"];
 
             var cells = [
                 [nickname,     { "class": [ "stream-col-nickname" ] } ],
@@ -207,24 +207,23 @@ function replaceTable(streams, updateTime) {
                 }
                 if (i == 0) {
                     var span = document.createElement("span");
-                    span.innerHTML = "● ";
-                    newCell.appendChild(span);
+                    if (broadcast) {
+                        span.setAttribute("data-image", broadcast);
+                        new Image().src = broadcast;
+                    }
+                    var raceSpan = document.createElement("span");
+                    raceSpan.innerHTML = race == "zerg"    ? "🦂 "
+                                       : race == "protoss" ? "🛸 "
+                                       : race == "terran"  ? "🌎 "
+                                                           : "📺 ";
+                    span.appendChild(raceSpan);
                     var a = document.createElement("a");
                     a.href = url;
                     a.rel = "noreferrer";
                     a.classList.add("stream-link");
                     a.appendChild(document.createTextNode(text));
-                    newCell.appendChild(a);
-                    if (previewImage) {
-                        var div = document.createElement('div');
-                        var img = document.createElement('img');
-                        img.src = previewImage;
-                        img.className = 'hide-image';
-                        div.className = 'image-wrapper';
-                        div.append(img);
-                        newCell.appendChild(div);
-                        newRow.classList.add("preview");
-                    }
+                    span.appendChild(a);
+                    newCell.appendChild(span);
                 } else {
                     newCell.appendChild(document.createTextNode(text));
                 }
@@ -241,6 +240,9 @@ function setLastUpdate(timeStr) {
     $("#text-last-updated").text(moment(timeStr).format("lll"));
 }
 
+var previewDiv = $("#preview")
+var previewImage = $("#preview-image");
+var divShown = false;
 var updater = {
     json: null,
 
@@ -269,6 +271,25 @@ var updater = {
         }
         $("#icon-refresh").removeClass("fa-spin");
         $("#icon-refresh").removeClass("active");
+
+        var onlineRows = $(".stream-row-online");
+        onlineRows.on("mouseenter", function() {
+            var imageSrc = $(this).find("td span").first().data("image");
+            previewImage.attr("src", imageSrc);
+            console.log("Entered")
+            var divTop = $(window).height()/2 - previewDiv.outerHeight()/2;
+            var divLeft = $(window).width()/2 - previewDiv.outerWidth()/2;
+            console.log(divTop)
+            console.log(divLeft)
+            previewDiv.css({ top: divTop, left: divLeft, position: 'absolute' });
+            document.getElementById("overlay").style.display = "block";
+            previewDiv.show();
+        });
+        onlineRows.on("mouseleave", function() {
+            console.log("Left")
+            document.getElementById("overlay").style.display = "none";
+            previewDiv.hide();
+        });
     }
 }
 
