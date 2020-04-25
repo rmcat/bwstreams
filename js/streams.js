@@ -280,6 +280,12 @@ var updater = {
     },
 
     refreshComplete: function() {
+        let hidePopovers = function() {
+            $('.popover').popover('hide');
+        };
+
+        hidePopovers();
+
         replaceTable(this.json["streams"], this.json["last_update"]);
         setLastUpdate(this.json["last_update"]);
         $.bootstrapSortable(true);
@@ -291,10 +297,6 @@ var updater = {
         $("#icon-refresh").removeClass("active");
 
         $('[data-toggle="popover"]').popover();
-
-        let hidePopovers = function() {
-            $('[data-toggle="popover"]').popover('hide');
-        };
 
         $('.race-emoji-popover').click(function(e) {
             hidePopovers();
