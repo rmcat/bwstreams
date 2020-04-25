@@ -147,6 +147,7 @@ function replaceTable(streams, updateTime) {
     var idTableStreams = "streams";
     var newTbody = document.createElement("tbody");
 
+    let idCounter = 0;
     for (var key in streams) {
         if (key.substring(0, 8) != "afreeca_") {
             continue;
@@ -206,29 +207,23 @@ function replaceTable(streams, updateTime) {
                     }
                 }
                 if (i == 0) {
+                    let id = "preview_" + idCounter++;
                     var span = document.createElement("span");
                     var raceAnchor = document.createElement("a");
                     raceAnchor.classList.add("race-emoji");
+                    raceAnchor.classList.add("race-emoji-popover");
+                    raceAnchor.setAttribute("triggerId", id);
                     raceAnchor.innerHTML = race == "zerg"    ? "🦂"
                                          : race == "protoss" ? "🛸"
                                          : race == "terran"  ? "🌎"
                                                              : "📺";
                     var linkAnchor = document.createElement("a");
+                    linkAnchor.id = id;
                     linkAnchor.href = url;
                     linkAnchor.rel = "noreferrer";
                     linkAnchor.classList.add("stream-link");
                     linkAnchor.appendChild(document.createTextNode(text));
                     if (broadcast) {
-                        // Clickable preview for non-desktop
-                        raceAnchor.setAttribute("data-image", broadcast);
-                        raceAnchor.setAttribute("data-placement", "right");
-                        raceAnchor.setAttribute("data-content", "<img src='" + broadcast + "' width='470' height='270'>");
-                        raceAnchor.setAttribute("data-html", "true");
-                        raceAnchor.setAttribute("data-trigger", "focus");
-                        raceAnchor.setAttribute("data-toggle", "popover");
-                        raceAnchor.setAttribute("tabindex", "0");
-                        raceAnchor.setAttribute("title", '');
-
                         // Hover preview for desktop
                         linkAnchor.setAttribute("data-image", broadcast);
                         linkAnchor.setAttribute("data-placement", "right");
@@ -295,11 +290,20 @@ var updater = {
         $("#icon-refresh").removeClass("fa-spin");
         $("#icon-refresh").removeClass("active");
 
-        $(function () {
-            $('[data-toggle="popover"]').popover({
-                container: '#streams'
-            })
+        $('[data-toggle="popover"]').popover();
+
+        let hidePopovers = function() {
+            $('[data-toggle="popover"]').popover('hide');
+        };
+
+        $('.race-emoji-popover').click(function(e) {
+            hidePopovers();
+            let triggerId = $(this).attr('triggerId');
+            $('#' + triggerId).popover('toggle');
+            e.stopPropagation();
         });
+
+        $('html').click(hidePopovers);
     }
 }
 
