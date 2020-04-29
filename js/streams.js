@@ -135,9 +135,9 @@ function getStreamUrl(streamId, useFullScreenLink) {
 
 function getLastSeenStatus(isOnline, lastSeen) {
     if (isOnline) {
-        return "online";
+        return "now";
     } else if (lastSeen === null) {
-        return "never seen";
+        return "never";
     } else {
         return moment(lastSeen).fromNow();
     }
