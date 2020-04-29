@@ -233,9 +233,6 @@ function replaceTable(streams, updateTime) {
                         linkAnchor.setAttribute("data-toggle", "popover");
                         linkAnchor.setAttribute("tabindex", "0");
                         linkAnchor.setAttribute("title", '');
-
-                        // Preload images
-                        new Image().src = broadcast;
                     }
 
                     span.appendChild(raceAnchor);
@@ -287,6 +284,14 @@ var updater = {
         hidePopovers();
 
         replaceTable(this.json["streams"], this.json["last_update"]);
+
+        // Preload images only on mouse movement
+        document.addEventListener("mousemove", () => {
+            let streams = Object.entries(this.json["streams"]);
+            let images = streams.map(s => s[1].image).filter(image => image);
+            images.forEach((image) => { new Image().src = image; });
+        }, { once: true });
+
         setLastUpdate(this.json["last_update"]);
         $.bootstrapSortable(true);
         var visibilitySettings = settings.visibilityKeys();
