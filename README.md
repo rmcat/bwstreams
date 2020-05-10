@@ -12,6 +12,10 @@ bwstreams is a Google App Engine application that tracks specific Brood War stre
 2. Open Google Cloud SDK Shell
 3. Navigate to the project root and run the command ``dev_appserver.py app.yaml``
 
+### Google Cloud Commands
+- gcloud app versions list
+- gcloud app versions delete
+
 ## Adding streams
 
 To initialise the database from a [JSON list of streams](afreeca_database.json), go to http://localhost:8080/admin/initialise_database.
