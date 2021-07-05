@@ -10,7 +10,7 @@ bwstreams is a Google App Engine application that tracks specific Brood War stre
 
 1. Install the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/python/download)
 2. Open Google Cloud SDK Shell
-3. Navigate to the project root and run the command ``dev_appserver.py app.yaml``
+3. Navigate to the project root and run the command ``dev_appserver.py app.yaml`` (use Python 2.7)
 
 ### Google Cloud Commands
 - gcloud app versions list
