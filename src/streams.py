@@ -49,9 +49,10 @@ def format_afreeca_response_to_json(data):
               '("user_id"[^,]+),[^}]*?' \
               '("is_password"[^,]+),.*?' \
               '("broad_start"[^,]+),.*?' \
+              '("broad_cate_no"[^,]+),.*?' \
               '("total_view_cnt"[^,]+),[^}]*?' \
               '}'
-    replace = '\n{ \\1, \\2, \\3, \\4, \\5 }'
+    replace = '\n{ \\1, \\2, \\3, \\4, \\5, \\6 }'
     data = re.sub(pattern, replace, data, flags=re.DOTALL)
     return data
 
@@ -68,6 +69,9 @@ def get_current_streams():
     time_format = '%Y-%m-%d %H:%M'
     time_offset = 9
     for info in json_object['CHANNEL']['REAL_BROAD']:
+        broad_cate_no = info['broad_cate_no']
+        if broad_cate_no != '00040001':
+            continue
         id = info['user_id']
         viewers = int(info['total_view_cnt'])
         locked = info['is_password'] == 'Y'
