@@ -154,13 +154,9 @@ function replaceTable(streams, updateTime) {
         }
         if (streams.hasOwnProperty(key)) {
             var stream = streams[key];
-            var game = stream["game"];
-            if (game != "brood war") {
-                continue;
-            }
 
             var nickname = stream["nickname"];
-            var race = stream["game_info"]["race"];
+            var race = stream["race"];
             var raceText = race ? race : "";
             var viewers = stream["viewers"];
             var maxViewers = stream["max_viewers"];

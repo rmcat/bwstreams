@@ -100,6 +100,10 @@ def update_database(db, streams):
         db_stream['online_since'] = None
         db_stream['viewers'] = 0
         db_stream['image'] = ''
+        remove_game_info = db_stream.pop('game_info', None)
+        if remove_game_info:
+            db_stream['race'] = remove_game_info['race']
+        db_stream.pop('game', None)
 
     for stream in streams:
         if stream['locked']:
@@ -114,7 +118,7 @@ def update_database(db, streams):
         db_stream['viewers'] = stream['viewers']
         if db_stream['viewers'] > db_stream['max_viewers']:
             db_stream['max_viewers'] = db_stream['viewers']
-        logger.info('{} ({})'.format(key, db_stream['viewers']))
+        logger.debug(db_stream)
 
     return db
 
@@ -132,8 +136,7 @@ def get_initial_database(json_file):
             'online_since': None,
             'max_viewers': 0,
             'viewers': 0,
-            'game': 'brood war',
-            'game_info': {'race': race},
+            'race': race,
         }
         key = database_key(stream['type'], stream['id'])
         db[key] = stream

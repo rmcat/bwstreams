@@ -216,7 +216,7 @@ class ExportAfreecaDatabaseHandler(webapp2.RequestHandler):
             stream_type, stream_id = streams.database_type_and_id(key)
             if stream_type != 'afreeca':
                 continue
-            race = value['game_info']['race']
+            race = value['race']
             nickname = value['nickname']
             json_obj[stream_id] = [ nickname, race ]
 

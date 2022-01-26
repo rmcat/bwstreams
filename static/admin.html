@@ -177,9 +177,8 @@ function setError(err) {
 
 function streamAdd(json) {
     let newId = document.getElementById(idNewStreamId).value;
-    let game = "brood war";
-    let gameType = "afreeca";
-    let key = gameType + "_" + newId;    
+    let streamService = "afreeca";
+    let key = streamService + "_" + newId;    
     if (newId === "" || json.hasOwnProperty(key)) {
         setError("Invalid key: " + key);
         return;
@@ -196,16 +195,13 @@ function streamAdd(json) {
         return;
     }
     json[key] = {
-      "game": game,
-      "game_info": {
-        "race": race
-      },
+      "race": race,
       "id": newId,
       "last_seen": null,
       "max_viewers": maxViewers,
       "nickname": nickname,
       "online_since": null,
-      "type": gameType,
+      "type": streamService,
       "viewers": 0
     }
     postOperation(json);
@@ -229,7 +225,7 @@ function streamEdit(json) {
         return;
     }
     json[key]["nickname"] = nickname;
-    json[key]["game_info"]["race"] = race;
+    json[key]["race"] = race;
     json[key]["max_viewers"] = maxViewers;
     postOperation(json);
 }
@@ -241,8 +237,8 @@ function streamRename(json) {
         return;
     }
     let newId = document.getElementById(idNewStreamId).value;
-    let gameType = "afreeca";
-    let newKey = gameType + "_" + newId;
+    let streamService = "afreeca";
+    let newKey = streamService + "_" + newId;
     if (newKey === key || json.hasOwnProperty(newKey)) {
         setError("Invalid key: " + newKey);
         return;
@@ -347,7 +343,7 @@ function fillFields() {
     let streamId = document.getElementById(idSelectStreamId).value;
     let json = JSON.parse(document.getElementById(idTextLeft).value);
     document.getElementById("nickname").value = json[streamId]["nickname"];
-    document.getElementById("race").value = json[streamId]["game_info"]["race"];
+    document.getElementById("race").value = json[streamId]["race"];
     document.getElementById("max-viewers").value = json[streamId]["max_viewers"];
 }
 
