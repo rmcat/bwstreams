@@ -1,6 +1,5 @@
 # bwstreams
 
- [![Build Status](https://travis-ci.org/rmcat/bwstreams.svg?branch=master)](https://travis-ci.org/rmcat/bwstreams)
 
 ## Overview
 
