@@ -1,5 +1,0 @@
-syntax: glob
-*.pyc
-.vs/
-skip/
-test_data/
