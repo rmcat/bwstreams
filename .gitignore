@@ -2,5 +2,6 @@
 .vs/
 skip/
 test_data/
+*.bak
 *.pyc
 client-secret.json
