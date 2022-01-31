@@ -25,9 +25,6 @@ handlers:
   upload: static/streams.html
   secure: always
   redirect_http_response_code: 301
-- url: /diff.html
-  static_files: static/diff.html
-  upload: static/diff.html
 - url: /afreeca_database.json
   script: src.app.app
 - url: /admin/.*
