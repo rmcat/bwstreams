@@ -11,10 +11,11 @@ bwstreams is a Python 2 Google App Engine app that tracks Brood War streams from
 3. Downgrade gcloud version (later versions are broken!): gcloud components update --version 359.0.0
 4. Run dev_appserver.bat (or run the command ``dev_appserver.py app.yaml`` using Python 2)
 
-### Google Cloud Commands
+### Useful Google Cloud Commands
 - gcloud app versions list
 - gcloud app versions delete
-- gcloud app deploy app.yaml
+- gcloud meta list-files-for-upload
+- gcloud app deploy
 
 ## Adding streams
 
