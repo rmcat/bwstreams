@@ -118,7 +118,7 @@ def update_database(db, streams):
         db_stream['viewers'] = stream['viewers']
         if db_stream['viewers'] > db_stream['max_viewers']:
             db_stream['max_viewers'] = db_stream['viewers']
-        logger.debug(db_stream)
+        # logger.debug(db_stream)
 
     return db
 
