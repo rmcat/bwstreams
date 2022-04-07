@@ -39,8 +39,13 @@ handlers:
 
 instance_class: F1
 automatic_scaling:
+  min_instances: 1
   max_instances: 1
+  min_idle_instances: 0
   max_idle_instances: 1
+  max_concurrent_requests: 80
+  min_pending_latency: 5s
+  max_pending_latency: 10s
 
 libraries:
 - name: webapp2
