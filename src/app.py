@@ -1,6 +1,7 @@
 import datetime
 import json
 import random
+import time
 
 import webapp2
 from google.appengine.ext import ndb
@@ -67,7 +68,18 @@ def update_database():
     db = utils.json_to_dict(db_json)
     current_streams = streams.get_current_streams()
 
-    updated_db = streams.update_database(db, current_streams)
+    attempts = 0
+    while True:
+      try:
+        updated_db = streams.update_database(db, current_streams)
+        break
+      except streams.OutdatedError as e:
+        attempts += 1
+        if attempts == 2:
+            logger.error('Outdated info on attempt %d... aborting', attempts)
+            raise e
+        logger.error('Outdated info on attempt %d... retrying', attempts)
+        time.sleep(10)
     updated_db_json = utils.dict_to_json(updated_db)
 
     ndb_set_value(JsonDatabase, datastore_key_database, updated_db_json)

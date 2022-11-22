@@ -39,6 +39,9 @@ Database data type
 A dictionary of streams with key <type>_<id>
 """
 
+class OutdatedError(Exception):
+    pass
+
 
 def format_afreeca_response_to_json(data):
     if data.startswith(b'var oBroadListData = ') and data.endswith(b';'):
@@ -105,6 +108,9 @@ def update_database(db, streams):
             db_stream['race'] = remove_game_info['race']
         db_stream.pop('game', None)
 
+    total_online_duration = datetime.timedelta()
+    n_online = 0
+
     for stream in streams:
         if stream['locked']:
             continue
@@ -119,6 +125,13 @@ def update_database(db, streams):
         if db_stream['viewers'] > db_stream['max_viewers']:
             db_stream['max_viewers'] = db_stream['viewers']
         # logger.debug(db_stream)
+
+        if db_stream['online_since'] is not None:
+            total_online_duration += time - db_stream['online_since']
+            n_online += 1
+
+    if n_online > 0 and total_online_duration / n_online > datetime.timedelta(days = 1):
+        raise OutdatedError()
 
     return db
 
