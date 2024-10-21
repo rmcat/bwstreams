@@ -1,13 +1,11 @@
 from __future__ import unicode_literals
 import datetime
 import json
-import re
-
-from pprint import pprint
-
 import utils
 from log import logger
 
+if not utils.is_cli:
+    from google.appengine.api import urlfetch
 
 afreeca_init_db_json = 'data/afreeca_database.json'
 if utils.is_cli:
@@ -39,47 +37,46 @@ Database data type
 A dictionary of streams with key <type>_<id>
 """
 
-class OutdatedError(Exception):
-    pass
 
+def fetch_streams():
+    if utils.is_cli:
+        return utils.fetch_streams_cli()
 
-def format_afreeca_response_to_json(data):
-    if data.startswith(b'var oBroadListData = ') and data.endswith(b';'):
-        data = data[len(b'var oBroadListData = '):-1]
-    data = re.sub(b'\'', b'"', data)
-    data = re.sub(r'[^\x00-\x7F]+', '', data)
-    pattern = '{("broad_no"[^,]+),[^}]*?' \
-              '("user_id"[^,]+),[^}]*?' \
-              '("is_password"[^,]+),.*?' \
-              '("broad_start"[^,]+),.*?' \
-              '("broad_cate_no"[^,]+),.*?' \
-              '("total_view_cnt"[^,]+),[^}]*?' \
-              '}'
-    replace = '\n{ \\1, \\2, \\3, \\4, \\5, \\6 }'
-    data = re.sub(pattern, replace, data, flags=re.DOTALL)
-    return data
+    api_endpoint = 'https://sch.sooplive.co.kr/api.php?m=categoryContentsList&szType=live&nPageNo={}&nListCnt=100&szPlatform=pc&szOrder=view_cnt_desc&szCateNo=00040001'
+    all_data = []
+    page_number = 1
+    while True:
+        url = api_endpoint.format(page_number)
+        try:
+            response = urlfetch.fetch(url)
+            if response.status_code == 200:
+                data = json.loads(response.content)
+                items = data.get('data', {}).get('list', [])
+                all_data.extend(items)
+                if data.get('data', {}).get('is_more', False):
+                    page_number += 1
+                    continue
+            else:
+                logger.error('Unexpected response status {} when accessing {}'.format(response.getcode(), url))
+            break
+        except urlfetch.Error as e:
+            logger.error('Failed to fetch {}: {}'.format(url, e.reason))
+            break
+    return all_data
 
 
 def get_current_streams():
     """Returns a list of streams (with only relevant keys)"""
     streams = list()
-    afreeca_url = 'http://live.afreecatv.com/afreeca/broad_list_api.php'
-    # afreeca_url = 'http://localhost:8000/broad_list_api.php'
-    afreeca_response = utils.fetch_url(afreeca_url)
-    afreeca_json_str = format_afreeca_response_to_json(afreeca_response)
-
-    json_object = json.loads(afreeca_json_str)
-    time_format = '%Y-%m-%d %H:%M'
+    soop_streams = fetch_streams()
+    time_format = '%Y-%m-%d %H:%M:%S.%f'
     time_offset = 9
-    for info in json_object['CHANNEL']['REAL_BROAD']:
-        broad_cate_no = info['broad_cate_no']
-        if broad_cate_no != '00040001':
-            continue
+    for info in soop_streams:
         id = info['user_id']
-        viewers = int(info['total_view_cnt'])
-        locked = info['is_password'] == 'Y'
+        viewers = int(info['view_cnt'])
+        locked = info['is_password'] != 0
         online_since = utils.get_utc_time(info['broad_start'], time_format, time_offset)
-        image = 'https://liveimg.afreecatv.com/{}_480x270.jpg'.format(info['broad_no'])
+        image = info['thumbnail']
         stream = {'type': 'afreeca', 'id': id, 'viewers': viewers, 'online_since': online_since,
                   'image': image, 'locked': locked}
         streams.append(stream)
@@ -130,9 +127,6 @@ def update_database(db, streams):
             total_online_duration += time - db_stream['online_since']
             n_online += 1
 
-    if n_online > 0 and total_online_duration / n_online > datetime.timedelta(days = 1):
-        raise OutdatedError()
-
     return db
 
 
@@ -156,6 +150,7 @@ def get_initial_database(json_file):
     return db
 
 
+@utils.cli_only
 def test_get_database(json_file):
     with open(json_file, 'r') as f:
         json_str = f.read()
@@ -170,22 +165,28 @@ def test_set_database(db, out_name):
         f.write(json_str)
 
 
+@utils.cli_only
 def main():
     try:
+        from pprint import pprint
         db_init = get_initial_database(afreeca_init_db_json)
-        with open('db_init.txt', 'w') as f:
+        with open('debug_init.txt', 'w') as f:
             pprint(db_init, f)
-        test_set_database(db_init, 'db_init.json')
+        test_set_database(db_init, 'debug_init.json')
 
-        db_get = test_get_database('db_init.json')
-        with open('db_get.txt', 'w') as f:
+        db_get = test_get_database('debug_init.json')
+        with open('debug_get.txt', 'w') as f:
             pprint(db_get, f)
-        test_set_database(db_get, 'db_get.json')
+        test_set_database(db_get, 'debug_get.json')
 
-        db_updated = update_database(db_get, get_current_streams(), datetime.datetime.utcnow())
-        with open('db_updated.txt', 'w') as f:
+        current_streams = get_current_streams()
+        with open('debug_current_streams.txt', 'w') as f:
+            pprint(current_streams, f)
+
+        db_updated = update_database(db_get, current_streams)
+        with open('debug_updated.txt', 'w') as f:
             pprint(db_updated, f)
-        test_set_database(db_updated, 'db_updated.json')
+        test_set_database(db_updated, 'debug_updated.json')
     except:
         logger.exception("Exception at main handler")
 

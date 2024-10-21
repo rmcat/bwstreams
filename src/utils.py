@@ -1,16 +1,15 @@
 import datetime
-import gzip
 import json
 import os
 import urllib2
-from StringIO import StringIO
-from google.appengine.api import urlfetch
 
 from log import logger
 
 
 is_cli = 'SERVER_SOFTWARE' not in os.environ
 is_dev_server = os.getenv('SERVER_SOFTWARE', '').startswith('Development')
+if not is_cli:
+    from google.appengine.api import urlfetch
 
 
 def cli_only(func):
@@ -40,24 +39,28 @@ def read_file(filename):
     raise Exception('Error reading {}'.format(filename))
 
 
-def fetch_url(url):
-    urlfetch.set_default_fetch_deadline(30)
-    try:
-        request = urllib2.Request(url)
-        request.add_header('Accept-encoding', 'gzip')
-        response = urllib2.urlopen(request)
-    except urllib2.URLError:
-        return None
-
-    if response.getcode() == 200:
-        if response.info().get('Content-Encoding') == 'gzip':
-            buf = StringIO(response.read())
-            f = gzip.GzipFile(fileobj=buf)
-            return f.read()
-        else:
-            return response.read()
-    else:
-        return None
+def fetch_streams_cli():
+    api_endpoint = 'https://sch.sooplive.co.kr/api.php?m=categoryContentsList&szType=live&nPageNo={}&nListCnt=100&szPlatform=pc&szOrder=view_cnt_desc&szCateNo=00040001'
+    all_data = []
+    page_number = 1
+    while True:
+        url = api_endpoint.format(page_number)
+        try:
+            response = urllib2.urlopen(url)
+            if response.getcode() == 200:
+                data = json.load(response)
+                items = data.get('data', {}).get('list', [])
+                all_data.extend(items)
+                if data.get('data', {}).get('is_more', False):
+                    page_number += 1
+                    continue
+            else:
+                print('Unexpected response status {} when accessing {}'.format(response.getcode(), url))
+            break
+        except urllib2.URLError as e:
+            print('Failed to fetch {}: {}'.format(url, e.reason))
+            break
+    return all_data
 
 
 def get_utc_time(s, format, offset):
