@@ -46,9 +46,3 @@ automatic_scaling:
   max_concurrent_requests: 80
   min_pending_latency: 5s
   max_pending_latency: 10s
-
-libraries:
-  - name: webapp2
-    version: latest
-  - name: jinja2
-    version: latest

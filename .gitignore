@@ -1,5 +1,6 @@
 .idea/
 .vs/
+lib/
 skip/
 test_data/
 *.bak

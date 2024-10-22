@@ -3,7 +3,7 @@ import json
 import random
 import time
 
-import webapp2
+from flask import Flask, render_template, request, Response
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 
@@ -17,6 +17,9 @@ memcache_key_last_update = 'memcache_key_last_update'
 datastore_key_database = 'database'
 datastore_key_last_update = 'last_update'
 datastore_key_hits_streams_json = 'streams_json'
+
+
+app = Flask(__name__)
 
 
 class JsonDatabase(ndb.Model):
@@ -93,33 +96,35 @@ def increment_hit_counter(key):
         hit_count.put()
 
 
-class InitialiseDatabaseHandler(webapp2.RequestHandler):
-    def get(self):
-        logger.info('Database init started')
-        afreeca_json = streams.afreeca_init_db_json
-        init_db = streams.get_initial_database(afreeca_json)
-        init_db_json = utils.dict_to_json(init_db)
-        try:
-            ndb_set_value(JsonDatabase, datastore_key_database, init_db_json, True)
-            ndb_set_value(Time, datastore_key_last_update, datetime.datetime.utcnow())
-        except KeyError:
-            pass
-        try:
-            ndb_set_value(HitCounter, datastore_key_hits_streams_json, 0, True)
-        except KeyError:
-            pass
-        logger.info('Database init finished')
+@app.route('/admin/initialise_database')
+def admin_initialise_database():
+    logger.info('Database init started')
+    afreeca_json = streams.afreeca_init_db_json
+    init_db = streams.get_initial_database(afreeca_json)
+    init_db_json = utils.dict_to_json(init_db)
+    try:
+        ndb_set_value(JsonDatabase, datastore_key_database, init_db_json, True)
+        ndb_set_value(Time, datastore_key_last_update, datetime.datetime.utcnow())
+    except KeyError:
+        pass
+    try:
+        ndb_set_value(HitCounter, datastore_key_hits_streams_json, 0, True)
+    except KeyError:
+        pass
+    logger.info('Database init finished')
+    return Response(status=204)
 
 
-class UpdateDatabaseHandler(webapp2.RequestHandler):
-    @ndb.transactional(xg=True)
-    @utils.wrap_exception
-    def get(self):
-        logger.info('Update started')
-        utc_now = datetime.datetime.utcnow()
-        update_database()
-        modify_last_update_time(utc_now)
-        logger.info('Update finished')
+@ndb.transactional(xg=True)
+@utils.wrap_exception
+@app.route('/admin/update_database')
+def admin_update_database():
+    logger.info('Update started')
+    utc_now = datetime.datetime.utcnow()
+    update_database()
+    modify_last_update_time(utc_now)
+    logger.info('Update finished')
+    return Response(status=204)
 
 
 @ndb.transactional()
@@ -135,108 +140,91 @@ def backup_database(backup_key):
     ndb_set_value(JsonDatabase, backup_key, db_json)
 
 
-class AdminHandler(webapp2.RequestHandler):
-    def post(self):
-        updated_db_json = self.request.get('database')
-        self.response.write('<html><body>')
-        self.response.write('<a href="/admin.html">Back to admin</a>')
-        self.response.write('<p><textarea readonly rows="80" cols="120">')
-        self.response.write(updated_db_json)
-        self.response.write('</textarea>')
-        self.response.write('</body></html>')
-        logger.info('Editing database: {}'.format(updated_db_json))
-        edit_database(updated_db_json)
+@app.route('/admin/edit_database', methods=['POST'])
+def admin_edit_database():
+    updated_db_json = request.form.get('database')
+    logger.info('Editing database: {}'.format(updated_db_json))
+    return render_template('edit_database.html', updated_db_json=updated_db_json)
 
 
-class BackupDatabaseHandler(webapp2.RequestHandler):
-    @utils.wrap_exception
-    def get(self):
-        logger.info('Backup started')
-        utc_now = datetime.datetime.utcnow()
-        datastore_key_database_backup = 'backup_{}'.format(utc_now.strftime('%Y-%m-%d'))
-        backup_database(datastore_key_database_backup)
-        logger.info('Backup finished')
+@utils.wrap_exception
+@app.route('/admin/backup_database')
+def admin_backup_database():
+    logger.info('Backup started')
+    utc_now = datetime.datetime.utcnow()
+    datastore_key_database_backup = 'backup_{}'.format(utc_now.strftime('%Y-%m-%d'))
+    backup_database(datastore_key_database_backup)
+    logger.info('Backup finished')
+    return Response(status=204)
 
 
-class BackupManualHandler(webapp2.RequestHandler):
-    @utils.wrap_exception
-    def get(self):
-        logger.info('Backup temp started')
-        backup_database('backup_manual')
-        logger.info('Backup temp finished')
+@utils.wrap_exception
+@app.route('/admin/backup_manual')
+def admin_backup_manual():
+    logger.info('Backup temp started')
+    backup_database('backup_manual')
+    logger.info('Backup temp finished')
+    return Response(status=204)
 
 
-class StreamsJsonHandler(webapp2.RequestHandler):
-    @utils.wrap_exception
-    def get(self):
-        increment_hit_counter(datastore_key_hits_streams_json)
+@utils.wrap_exception
+@app.route('/streams.json')
+def streams_json():
+    increment_hit_counter(datastore_key_hits_streams_json)
 
-        # Get database
-        db = memcache.get(memcache_key_database)
-        if db is None:
-            logger.warn('memcache failed on key: {}'.format(memcache_key_database))
-            db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
-            db = utils.json_to_dict(db_json)
-            memcache.set(memcache_key_database, db)
+    # Get database
+    db = memcache.get(memcache_key_database)
+    if db is None:
+        logger.warn('memcache failed on key: {}'.format(memcache_key_database))
+        db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
+        db = utils.json_to_dict(db_json)
+        memcache.set(memcache_key_database, db)
 
-        # Get last update time
-        last_update_time = memcache.get(memcache_key_last_update)
-        if last_update_time is None:
-            logger.warn('memcache failed on key: {}'.format(memcache_key_last_update))
-            last_update_time = ndb_get_entity(Time, datastore_key_last_update).value
-            memcache.set(memcache_key_last_update, last_update_time)
+    # Get last update time
+    last_update_time = memcache.get(memcache_key_last_update)
+    if last_update_time is None:
+        logger.warn('memcache failed on key: {}'.format(memcache_key_last_update))
+        last_update_time = ndb_get_entity(Time, datastore_key_last_update).value
+        memcache.set(memcache_key_last_update, last_update_time)
 
-        json_obj = {'streams': db, 'last_update': last_update_time}
-        json_str = utils.dict_to_json(json_obj)
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json_str)
-
-
-class ExportAfreecaDatabaseHandler(webapp2.RequestHandler):
-    @utils.wrap_exception
-    def get(self):
-        increment_hit_counter(datastore_key_hits_streams_json)
-
-        # Get database
-        db = memcache.get(memcache_key_database)
-        if db is None:
-            logger.warn('memcache failed on key: {}'.format(memcache_key_database))
-            db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
-            db = utils.json_to_dict(db_json)
-            memcache.set(memcache_key_database, db)
-
-        # Get last update time
-        last_update_time = memcache.get(memcache_key_last_update)
-        if last_update_time is None:
-            logger.warn('memcache failed on key: {}'.format(memcache_key_last_update))
-            last_update_time = ndb_get_entity(Time, datastore_key_last_update).value
-            memcache.set(memcache_key_last_update, last_update_time)
-
-        json_obj = dict()
-        for key, value in db.items():
-            stream_type, stream_id = streams.database_type_and_id(key)
-            if stream_type != 'afreeca':
-                continue
-            race = value['race']
-            nickname = value['nickname']
-            json_obj[stream_id] = [ nickname, race ]
-
-        # Output in Snipealot formatting
-        json_str = '{\n'
-        for key, value in sorted(json_obj.items()):
-            json_str += '    "{}": [ "{}", "{}" ],\n'.format(key, value[0], value[1])
-        json_str = json_str[:-2] + '\n}\n'
-
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json_str)
+    json_obj = {'streams': db, 'last_update': last_update_time}
+    json_str = utils.dict_to_json(json_obj)
+    return Response(json_str, mimetype='application/json')
 
 
-app = webapp2.WSGIApplication([
-    ('/admin/update_database', UpdateDatabaseHandler),
-    ('/admin/backup_database', BackupDatabaseHandler),
-    ('/admin/backup_manual', BackupManualHandler),
-    ('/admin/initialise_database', InitialiseDatabaseHandler),
-    ('/admin/edit_database', AdminHandler),
-    ('/afreeca_database.json', ExportAfreecaDatabaseHandler),
-    ('/streams.json', StreamsJsonHandler),
-], debug=True)
+@utils.wrap_exception
+@app.route('/afreeca_database.json')
+def afreeca_database_json():
+    increment_hit_counter(datastore_key_hits_streams_json)
+
+    # Get database
+    db = memcache.get(memcache_key_database)
+    if db is None:
+        logger.warn('memcache failed on key: {}'.format(memcache_key_database))
+        db_json = ndb_get_entity(JsonDatabase, datastore_key_database).value
+        db = utils.json_to_dict(db_json)
+        memcache.set(memcache_key_database, db)
+
+    # Get last update time
+    last_update_time = memcache.get(memcache_key_last_update)
+    if last_update_time is None:
+        logger.warn('memcache failed on key: {}'.format(memcache_key_last_update))
+        last_update_time = ndb_get_entity(Time, datastore_key_last_update).value
+        memcache.set(memcache_key_last_update, last_update_time)
+
+    json_obj = dict()
+    for key, value in db.items():
+        stream_type, stream_id = streams.database_type_and_id(key)
+        if stream_type != 'afreeca':
+            continue
+        race = value['race']
+        nickname = value['nickname']
+        json_obj[stream_id] = [ nickname, race ]
+
+    # Output in Snipealot formatting
+    json_str = '{\n'
+    for key, value in sorted(json_obj.items()):
+        json_str += '    "{}": [ "{}", "{}" ],\n'.format(key, value[0], value[1])
+    json_str = json_str[:-2] + '\n}\n'
+
+    return Response(json_str, mimetype='application/json')

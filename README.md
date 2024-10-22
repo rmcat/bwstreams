@@ -6,14 +6,20 @@ bwstreams is a Python 2 Google App Engine app that tracks Brood War streams from
 
 [<img src="demo.png" height=400>](demo.png)
 
-## Running the development server
+## Setting up the Development Server
 
 1. Install Python 2.7.18
 2. Install the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/python/download)
 3. Open Google Cloud SDK Shell
 4. `gcloud components update --version 359.0.0` to downgrade gcloud
 5. `gcloud components install app-engine-python-extras app-engine-python cloud-datastore-emulator` (run with admin privilege if errors are encountered)
-6. Run dev_appserver.bat (or run the command `dev_appserver.py app.yaml` using Python 2)
+6. `virtualenv venv` to create a virtual environment
+7. `source venv/Scripts/activate` to activate the virtual environment
+8. `pip install -t lib -r requirements.txt` to install the requirements to the lib folder
+
+## Starting the Development Server
+
+1. `./dev_appserver`
 
 ### Useful Google Cloud Commands
 
