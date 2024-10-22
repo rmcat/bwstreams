@@ -3,39 +3,39 @@ api_version: 1
 threadsafe: true
 
 builtins:
-- appstats: on
+  - appstats: on
 
 handlers:
-- url: /css
-  static_dir: css
-- url: /font-awesome
-  static_dir: font-awesome
-- url: /fonts
-  static_dir: js
-- url: /js
-  static_dir: js
-- url: /favicon\.ico
-  static_files: static/images/favicon.ico
-  upload: static/images/favicon\.ico
-  mime_type: image/x-icon
-- url: /streams.json
-  script: src.app.app
-- url: /
-  static_files: static/streams.html
-  upload: static/streams.html
-  secure: always
-  redirect_http_response_code: 301
-- url: /afreeca_database.json
-  script: src.app.app
-- url: /admin/.*
-  script: src.app.app
-  login: admin
-  secure: always
-- url: /admin.html
-  static_files: static/admin.html
-  upload: static/admin.html
-  login: admin
-  secure: always
+  - url: /css
+    static_dir: css
+  - url: /font-awesome
+    static_dir: font-awesome
+  - url: /fonts
+    static_dir: js
+  - url: /js
+    static_dir: js
+  - url: /favicon\.ico
+    static_files: static/images/favicon.ico
+    upload: static/images/favicon\.ico
+    mime_type: image/x-icon
+  - url: /streams.json
+    script: src.app.app
+  - url: /
+    static_files: static/streams.html
+    upload: static/streams.html
+    secure: always
+    redirect_http_response_code: 301
+  - url: /afreeca_database.json
+    script: src.app.app
+  - url: /admin/.*
+    script: src.app.app
+    login: admin
+    secure: always
+  - url: /admin.html
+    static_files: static/admin.html
+    upload: static/admin.html
+    login: admin
+    secure: always
 
 instance_class: F1
 automatic_scaling:
@@ -48,7 +48,7 @@ automatic_scaling:
   max_pending_latency: 10s
 
 libraries:
-- name: webapp2
-  version: latest
-- name: jinja2
-  version: latest
+  - name: webapp2
+    version: latest
+  - name: jinja2
+    version: latest
