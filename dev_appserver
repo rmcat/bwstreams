@@ -1,3 +1,0 @@
-#!/bin/sh
-source venv/Scripts/activate
-python "$LOCALAPPDATA/Google/Cloud SDK/google-cloud-sdk/bin/dev_appserver.py" app.yaml
