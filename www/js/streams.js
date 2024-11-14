@@ -10,7 +10,6 @@ var settings = {
   showColRace: false,
   showColViewers: true,
   showColDuration: true,
-  autoRefresh: true,
   useFullScreenLinks: false,
 
   keys: function () {
@@ -92,11 +91,6 @@ var settings = {
   },
 
   callback: function (setting) {
-    if (setting === "autoRefresh") {
-      timer.updateTimerStatus();
-      return;
-    }
-
     if (setting === "useFullScreenLinks") {
       $("a.stream-link").each(function () {
         var streamLink = $(this).attr("href");
@@ -274,7 +268,6 @@ var updater = {
   refreshStarted: function () {
     $("#icon-refresh").addClass("fa-spin");
     $("#icon-refresh").addClass("active");
-    timer.resetTimer();
   },
 
   refreshComplete: function () {
@@ -322,41 +315,6 @@ var updater = {
   },
 };
 
-var timer = {
-  timerDuration: 60,
-  timerElapsed: 0,
-  timerId: null,
-
-  updateTimerStatus: function () {
-    if (settings.autoRefresh && this.timerId == null) {
-      this.startTimer();
-    }
-  },
-
-  resetTimer: function () {
-    this.timerElapsed = 0;
-  },
-
-  stopTimer: function () {
-    if (this.timerId != null) {
-      clearInterval(this.timerId);
-      this.timerId = null;
-    }
-  },
-
-  startTimer: function () {
-    this.timerId = setInterval(
-      function () {
-        ++this.timerElapsed;
-        if (settings.autoRefresh && this.timerElapsed >= this.timerDuration) {
-          updater.refreshStreams();
-        }
-      }.bind(this),
-      1000
-    );
-  },
-};
-
 jQuery(document).ready(function ($) {
   $("#btn-refresh").click(function () {
     updater.refreshStreams();
@@ -373,11 +331,6 @@ jQuery(document).ready(function ($) {
       });
     })();
   }
-
-  $("#checkbox-auto-refresh").click(function () {
-    settings["autoRefresh"] = $("#checkbox-auto-refresh").is(":checked");
-    settings.callback("autoRefresh");
-  });
 
   $("#checkbox-use-full-screen-links").click(function () {
     settings["useFullScreenLinks"] = $("#checkbox-use-full-screen-links").is(
