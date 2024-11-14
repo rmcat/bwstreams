@@ -1,27 +1,49 @@
 # bwstreams
 
-## Overview
+[bwstreams](https://bwstreams.appspot.com/) is a site that displays Brood War streams from [SOOP](https://www.sooplive.co.kr/) in an accessible way for the foreigner community. Since AfreecaTV rebranded to SOOP, the backend has been redeveloped into a new, separate project, resulting in this project being a static site.
 
-bwstreams is a Python 2 Google App Engine app that tracks Brood War streams from [AfreecaTV](http://afreecatv.com). See it live at https://bwstreams.appspot.com.
+## Requirements
 
-[<img src="demo.png" height=400>](demo.png)
+1. Python 3
+2. [gcloud CLI](https://cloud.google.com/sdk/docs/install)
 
-## Setting up the Development Server
+## Project Setup
 
-1. Install Python 3
-2. Install the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/python/download)
+```sh
+# Create a virtual environment
+python -m venv venv
 
-## Starting the Development Server
+# Activate the virtual environment
+source venv/bin/activate
 
-1. `./dev_appserver`
+# Install dependencies
+pip install -r requirements.txt
 
-### Useful Google Cloud Commands
+# Make the scripts executable
+chmod +x run_flask.sh run_gunicorn.sh
+```
 
-- gcloud app versions list
-- gcloud app versions delete
-- gcloud meta list-files-for-upload
-- gcloud app deploy
+## Running the Local Development Environment
 
-### Run Local Server
+```sh
+# Run the Flask Development Server
+./run_flask.sh
 
-`python3 -m http.server 8000`
+# Run the Flask App with Gunicorn
+./run_gunicorn.sh
+```
+
+## Deploying to Google App Engine
+
+```sh
+gcloud app deploy
+
+# Other useful commands
+# gcloud app versions list
+# gcloud app versions delete
+# gcloud meta list-files-for-upload
+```
+
+## Site Preview
+
+[<img src="demo.png">](demo.png)
