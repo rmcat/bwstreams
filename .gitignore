@@ -1,8 +1,10 @@
 .idea/
 .vs/
+.vscode
 lib/
-skip/
 test_data/
+data/
+venv/
+__pycache__/
 *.bak
 *.pyc
-client-secret.json
