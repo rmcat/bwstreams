@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CORS Test</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        const endpoints = [
+          "http://localhost:8081/debug-cors",
+          "http://localhost:8081/allow-all-cors",
+        ];
+
+        endpoints.forEach((endpoint) => {
+          fetch(endpoint)
+            .then((response) => response.json())
+            .then((data) => console.log(`Respones from ${endpoint}:`, data))
+            .catch((error) =>
+              console.error(`Error fetching ${endpoint}:`, error)
+            );
+        });
+      };
+    </script>
+  </body>
+</html>
