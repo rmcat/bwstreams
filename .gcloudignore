@@ -1,4 +1,10 @@
-.gcloudignore
-.git
-.gitignore
-#!include:.gitignore
+# Ignore everything
+
+*
+
+# Except the following:
+
+!app.yaml
+!main.py
+!requirements.txt
+!www/
