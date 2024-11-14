@@ -5,6 +5,4 @@
 # Except the following:
 
 !app.yaml
-!main.py
-!requirements.txt
 !www/
