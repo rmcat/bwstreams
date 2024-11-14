@@ -10,7 +10,6 @@ var settings = {
   showColRace: false,
   showColViewers: true,
   showColDuration: true,
-  useFullScreenLinks: false,
 
   keys: function () {
     return Object.keys(this).filter((s) => typeof this[s] == "boolean");
@@ -91,19 +90,6 @@ var settings = {
   },
 
   callback: function (setting) {
-    if (setting === "useFullScreenLinks") {
-      $("a.stream-link").each(function () {
-        var streamLink = $(this).attr("href");
-        var streamId = streamLink.split("/")[3];
-        var updatedStreamLink = getStreamUrl(
-          streamId,
-          settings["useFullScreenLinks"]
-        );
-        $(this).attr("href", updatedStreamLink);
-      });
-      return;
-    }
-
     var className = this.settingToClassName(setting);
     if (this[setting]) {
       if (setting === "showRowOffline") {
@@ -331,13 +317,6 @@ jQuery(document).ready(function ($) {
       });
     })();
   }
-
-  $("#checkbox-use-full-screen-links").click(function () {
-    settings["useFullScreenLinks"] = $("#checkbox-use-full-screen-links").is(
-      ":checked"
-    );
-    settings.callback("useFullScreenLinks");
-  });
 
   settings.loadSettings();
 
