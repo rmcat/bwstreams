@@ -242,7 +242,10 @@ var updater = {
 
   refreshStreams: function () {
     this.refreshStarted();
-    var promise = $.getJSON("http://localhost:8081/streams.json");
+    var promise = $.getJSON(
+      // "http://localhost:8081/streams.json"
+      "https://backend-api-640171121546.us-west1.run.app/streams.json"
+    );
     promise.done(
       function (data) {
         this.json = data;
